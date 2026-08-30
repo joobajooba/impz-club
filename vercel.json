@@ -5,6 +5,6 @@
       "source": "/api/ipfs/:path*",
       "destination": "https://gateway.pinata.cloud/ipfs/:path*"
     },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

@@ -39,7 +39,6 @@ export default function Profile() {
     if (!address) return Promise.resolve();
     return saveProfile(address, fields).catch((err) => {
       console.warn("Could not save profile", err);
-      throw err;
     });
   }
 
@@ -73,9 +72,9 @@ export default function Profile() {
     (async () => {
       try {
         const [row, ownedCount, board] = await Promise.all([
-          loadProfile(address),
+          loadProfile(address).catch(() => null),
           fetchImpBalance(address),
-          loadLeaderboard(),
+          loadLeaderboard().catch(() => []),
         ]);
         if (cancelled) return;
 

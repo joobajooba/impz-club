@@ -58,7 +58,12 @@ createAppKit({
     "--w3m-accent": "#e85a4f",
     "--w3m-font-family": '"Pixelify Sans", monospace',
   },
+  enableCoinbase: false,
   features: {
     analytics: false,
+    swaps: false,
+    onramp: false,
+    email: false,
+    socials: false,
   },
 });
