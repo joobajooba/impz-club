@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import ConnectWallet from "../components/ConnectWallet.jsx";
 
 export default function Home() {
   const teamRef = useRef(null);
@@ -27,9 +28,9 @@ export default function Home() {
           </p>
           <div className="actions">
             <div id="connect-wallet">
-              <button type="button" className="fill">
-                Connect Wallet
-              </button>
+              <div className="wallet-slot">
+                <ConnectWallet />
+              </div>
             </div>
             <a href="https://opensea.io/collection/implingz" target="_blank" rel="noopener">
               Buy an Imp

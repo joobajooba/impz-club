@@ -36,6 +36,11 @@ html.font-arial #root {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+w3m-modal,
+appkit-modal {
+  font-family: inherit;
+}
+
 body {
   min-height: 100%;
   min-height: 100dvh;

@@ -1,3 +1,5 @@
+import ConnectWallet from "../components/ConnectWallet.jsx";
+
 export default function Profile() {
   return (
     <main className="profile">
@@ -20,9 +22,7 @@ export default function Profile() {
               aria-label="Username"
               readOnly
             />
-            <button type="button" className="profile-box profile-wallet">
-              Connect Wallet
-            </button>
+            <ConnectWallet className="profile-box profile-wallet" />
           </div>
           <div className="profile-box profile-age">account age (days)</div>
         </div>
