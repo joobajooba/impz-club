@@ -124,31 +124,52 @@ h1 {
 }
 
 .header-user {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
-  max-width: 12.5rem;
-  padding: 3px 10px 3px 3px;
-  border: 1px solid #3a3a3a;
-  border-radius: 12px;
-  background: #0b0b0b;
+  gap: 7px;
+  width: 172px;
+  height: 46px;
+  padding: 6px 10px 6px 7px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: inherit;
   font: inherit;
   cursor: pointer;
-  min-width: 0;
+  flex-shrink: 0;
+}
+
+.header-user-plate {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.header-user-pfp,
+.header-user-meta {
+  position: relative;
+  z-index: 1;
 }
 
 .header-user-pfp {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
-  background: #1a1a1a;
+  background: #5a1c24;
+  box-shadow: inset 0 0 0 1px #3a1014;
 }
 
 .header-user-pfp.has-imp {
-  background: #111;
+  background: #3a1014;
 }
 
 .header-user-pfp img {
@@ -163,23 +184,25 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: center;
   min-width: 0;
+  flex: 1;
 }
 
 .header-user-name {
   color: #fff;
-  font-size: 0.78rem;
-  line-height: 1.15;
-  max-width: 7.75rem;
+  font-size: 0.72rem;
+  line-height: 1.1;
+  max-width: 7.1rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .header-user-wallet {
-  color: #8d8d8d;
-  font-size: 0.68rem;
-  line-height: 1.2;
+  color: #f0c8cc;
+  font-size: 0.62rem;
+  line-height: 1.15;
 }
 
 .header-settings {
@@ -755,10 +778,6 @@ dialog.site-dialog::backdrop {
   header,
   nav {
     flex-shrink: 0;
-  }
-
-  .header-user {
-    max-width: 10.5rem;
   }
 
   main {

@@ -61,6 +61,7 @@ export default function HeaderUser() {
 
   return (
     <button type="button" className="header-user" onClick={onClick} title={isConnected ? "Open profile" : "Connect wallet"}>
+      <img className="header-user-plate" src="/header-user.png" alt="" />
       <span className={"header-user-pfp" + (pfpId ? " has-imp" : "")}>
         {pfpId ? <ImpImage tokenId={pfpId} alt="" /> : null}
       </span>
