@@ -372,6 +372,51 @@ main.blank {
   display: block;
 }
 
+main.portal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 0;
+  padding: 16px;
+}
+
+.portal-panel {
+  position: relative;
+  width: min(960px, 100%);
+  height: min(560px, calc(100dvh - var(--header-h) - var(--inv-h) - 40px));
+  min-height: 280px;
+  background: #000;
+  overflow: hidden;
+  cursor: crosshair;
+  user-select: none;
+  touch-action: none;
+}
+
+.portal-walker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: url("/walker.png");
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.portal-hint {
+  position: absolute;
+  right: 0;
+  bottom: 10px;
+  left: 0;
+  margin: 0;
+  color: #6a6a6a;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-align: center;
+  pointer-events: none;
+}
+
 main.profile {
   display: flex;
   justify-content: center;
@@ -803,6 +848,15 @@ dialog.site-dialog::backdrop {
   main.profile {
     align-items: flex-start;
     padding-top: 16px;
+  }
+
+  main.portal {
+    padding: 12px;
+    padding-bottom: calc(var(--inv-h) + 12px);
+  }
+
+  .portal-panel {
+    height: min(480px, calc(100dvh - var(--header-h) - var(--inv-h) - 36px));
   }
 
   .profile-grid {

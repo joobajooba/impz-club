@@ -1,3 +1,9 @@
+import Walker from "../components/Walker.jsx";
+
 export default function Portal() {
-  return <main className="blank" />;
+  return (
+    <main className="portal">
+      <Walker />
+    </main>
+  );
 }
