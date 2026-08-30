@@ -181,8 +181,8 @@ main {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
-  width: 50%;
-  max-width: 50%;
+  width: 72%;
+  max-width: 72%;
   min-width: 0;
 }
 
@@ -199,7 +199,7 @@ main {
   font-size: clamp(0.55rem, 1.35vw, 0.78rem);
   color: #fff;
   text-decoration: none;
-  padding: 6px 4px;
+  padding: 6px 10px;
   border: 2px solid var(--line);
   border-radius: 8px;
   background: transparent;
