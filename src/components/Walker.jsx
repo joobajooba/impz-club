@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 const CELL = 64;
 const FRAMES = 2;
-const SCALE = 2;
+const SCALE = 1;
 const SIZE = CELL * SCALE;
 const SHEET_W = SIZE * FRAMES;
 const SHEET_H = SIZE;

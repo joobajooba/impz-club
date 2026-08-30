@@ -386,6 +386,7 @@ main.portal {
   height: min(560px, calc(100dvh - var(--header-h) - var(--inv-h) - 40px));
   min-height: 280px;
   background: #000;
+  border: 2px solid var(--line);
   overflow: hidden;
   cursor: crosshair;
   user-select: none;
