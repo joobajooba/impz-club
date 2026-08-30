@@ -280,6 +280,23 @@ main.profile {
   min-height: 48px;
 }
 
+.profile-box.stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.stat-label {
+  color: #c8c8c8;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.stat-value {
+  font-size: 1.15rem;
+}
+
 .profile-box::placeholder {
   color: #fff;
   opacity: 1;
@@ -339,9 +356,22 @@ input.profile-box {
   -webkit-appearance: none;
 }
 
+.profile-hint,
+.profile-error,
 .profile-picker-status {
   color: #c8c8c8;
+  margin-top: 14px;
+  text-align: center;
+}
+
+.profile-error {
+  color: #ffb3a0;
+}
+
+.profile-picker-status {
+  margin-top: 0;
   margin-bottom: 12px;
+  text-align: left;
 }
 
 .imp-picker-grid {
