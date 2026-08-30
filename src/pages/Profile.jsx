@@ -10,7 +10,7 @@ import {
   rankFromLeaderboard,
   saveProfile,
 } from "../lib/db.js";
-import { fetchImpBalance, fetchOwnedImps, profileKey } from "../lib/imps.js";
+import { fetchImpBalance, fetchOwnedImps, notifyProfileChange, profileKey } from "../lib/imps.js";
 
 export default function Profile() {
   const { open } = useAppKit();
@@ -33,6 +33,11 @@ export default function Profile() {
     try {
       localStorage.setItem(profileKey(address, key), value);
     } catch {}
+    notifyProfileChange({
+      address,
+      username: key === "username" ? value : undefined,
+      pfpId: key === "pfp" ? value : undefined,
+    });
   }
 
   function persist(fields) {
@@ -91,6 +96,7 @@ export default function Profile() {
 
         setUsername(nextUsername);
         setPfpId(nextPfp);
+        notifyProfileChange({ address, username: nextUsername, pfpId: nextPfp });
         setTotalImpz(String(ownedCount));
         setRank(nextRank);
         setImpCoins(nextCoins);

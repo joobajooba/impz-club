@@ -181,3 +181,15 @@ export async function fetchOwnedImps(owner) {
 export function profileKey(address, suffix) {
   return "impz-" + suffix + ":" + String(address).toLowerCase();
 }
+
+export function shortAddress(address) {
+  const value = String(address || "");
+  if (value.length < 12) return value;
+  return `${value.slice(0, 6)}...${value.slice(-4)}`;
+}
+
+export function notifyProfileChange(detail) {
+  try {
+    window.dispatchEvent(new CustomEvent("impz-profile", { detail }));
+  } catch {}
+}

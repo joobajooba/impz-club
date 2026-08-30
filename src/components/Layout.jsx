@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import HeaderUser from "./HeaderUser.jsx";
 
 const NAV = [
   { to: "/", title: "Home", src: "/nav-home.png", alt: "Home" },
@@ -29,11 +30,19 @@ export default function Layout() {
   return (
     <>
       <header>
-        <img src="/logo.gif" alt="Implingz" />
-        <h1>Club Impz</h1>
+        <div className="brand">
+          <img src="/logo.gif" alt="Implingz" />
+          <h1>Club Impz</h1>
+        </div>
+        <div className="header-tools">
+          <HeaderUser />
+          <button type="button" className="header-settings" title="Page Settings" onClick={openSettings}>
+            <img src="/nav-settings.png" alt="Page Settings" />
+          </button>
+        </div>
       </header>
 
-      <Outlet context={{ openSettings }} />
+      <Outlet />
 
       <nav>
         {NAV.map((item) => (
@@ -41,9 +50,6 @@ export default function Layout() {
             <img src={item.src} alt={item.alt} />
           </NavLink>
         ))}
-        <button type="button" title="Page Settings" onClick={openSettings}>
-          <img src="/nav-settings.png" alt="Page Settings" />
-        </button>
       </nav>
 
       <dialog
