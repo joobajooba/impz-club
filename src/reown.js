@@ -29,11 +29,14 @@ export const robinhood = defineChain({
 
 export const networks = [robinhood, mainnet, polygon, optimism, arbitrum, base];
 
+const siteUrl =
+  typeof window !== "undefined" ? window.location.origin : "https://www.impz.club";
+
 export const metadata = {
   name: "Club Impz",
   description: "Club Impz is the home of the Implingz community.",
-  url: "https://impz.club",
-  icons: ["https://impz.club/logo.gif"],
+  url: siteUrl,
+  icons: [`${siteUrl}/logo.gif`],
 };
 
 export const queryClient = new QueryClient();
@@ -56,6 +59,6 @@ createAppKit({
     "--w3m-font-family": '"Pixelify Sans", monospace',
   },
   features: {
-    analytics: true,
+    analytics: false,
   },
 });
