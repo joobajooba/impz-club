@@ -45,6 +45,8 @@ export function localImpSrc(tokenId) {
   return "";
 }
 
+const BLOCKED_IPFS = /ipfs\.io|dweb\.link|w3s\.link|cf-ipfs\.com|cloudflare-ipfs\.com/i;
+
 export function ipfsPath(url) {
   if (!url) return "";
   const value = String(url);
@@ -53,13 +55,14 @@ export function ipfsPath(url) {
   return match ? match[1] : "";
 }
 
-export function proxiedIpfsSrc(path) {
-  if (!path) return "";
-  return `/api/ipfs/${path.replace(/^\/+/, "")}`;
+export function pinataFromIpfs(urlOrPath) {
+  const path = ipfsPath(urlOrPath);
+  if (path) return `https://gateway.pinata.cloud/ipfs/${path}`;
+  return "";
 }
 
 export function remoteImpSrc(tokenId) {
-  return proxiedIpfsSrc(`${IMP_IMAGE_CID}/${tokenId}`);
+  return pinataImpSrc(tokenId);
 }
 
 export function pinataImpSrc(tokenId) {
@@ -67,26 +70,20 @@ export function pinataImpSrc(tokenId) {
 }
 
 export function impImageSrc(tokenId, remote = "") {
-  return localImpSrc(tokenId) || remoteImpSrc(tokenId) || remote || pinataImpSrc(tokenId);
+  return localImpSrc(tokenId) || pinataImpSrc(tokenId) || pinataFromIpfs(remote) || remote;
 }
 
 export function impImageCandidates(tokenId, remote = "") {
   const seen = new Set();
   const list = [];
   const add = (src) => {
-    if (src && !seen.has(src)) {
-      seen.add(src);
-      list.push(src);
-    }
+    if (!src || seen.has(src) || BLOCKED_IPFS.test(src)) return;
+    seen.add(src);
+    list.push(src);
   };
   add(localImpSrc(tokenId));
-  add(remoteImpSrc(tokenId));
   add(pinataImpSrc(tokenId));
-  const remotePath = ipfsPath(remote);
-  if (remotePath) {
-    add(proxiedIpfsSrc(remotePath));
-    add(`https://gateway.pinata.cloud/ipfs/${remotePath}`);
-  }
+  add(pinataFromIpfs(remote));
   add(remote);
   return list;
 }
@@ -129,7 +126,7 @@ async function fetchFromBlockscout(owner) {
       const id = String(item.id);
       items.push({
         id,
-        image: remoteImpSrc(id),
+        image: pinataImpSrc(id),
         name: cleanName(id, item.metadata?.name),
       });
     }
@@ -164,7 +161,7 @@ async function fetchFromOwnerOf(owner) {
     results.forEach((result, index) => {
       if (result.status === "success" && sameAddress(result.result, owner)) {
         const id = String(start + index);
-        items.push({ id, image: remoteImpSrc(id), name: "Implingz #" + id });
+        items.push({ id, image: pinataImpSrc(id), name: "Implingz #" + id });
       }
     });
   }

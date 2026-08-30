@@ -1,7 +1,10 @@
 {
   "framework": "vite",
   "rewrites": [
-    { "source": "/api/ipfs/:path*", "destination": "/api/ipfs" },
+    {
+      "source": "/api/ipfs/:path*",
+      "destination": "https://gateway.pinata.cloud/ipfs/:path*"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

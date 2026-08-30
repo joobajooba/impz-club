@@ -16,6 +16,7 @@ export default function ImpImage({ tokenId, remote, alt }) {
     <img
       src={src}
       alt={alt}
+      referrerPolicy="no-referrer"
       onError={() => {
         setIndex((current) => (current + 1 < candidates.length ? current + 1 : current));
       }}
