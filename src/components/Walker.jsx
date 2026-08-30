@@ -1,18 +1,13 @@
 import { useEffect, useRef } from "react";
 
-const CELL = 16;
-const COLS = 4;
-const ROWS = 4;
-const SCALE = 4;
+const CELL = 64;
+const FRAMES = 2;
+const SCALE = 2;
 const SIZE = CELL * SCALE;
-const SHEET = SIZE * COLS;
+const SHEET_W = SIZE * FRAMES;
+const SHEET_H = SIZE;
 const SPEED = 130;
-const FRAME_MS = 130;
-
-function facing(dx, dy) {
-  if (Math.abs(dx) > Math.abs(dy)) return dx < 0 ? 2 : 3;
-  return dy < 0 ? 1 : 0;
-}
+const FRAME_MS = 160;
 
 export default function Walker() {
   const panelRef = useRef(null);
@@ -22,7 +17,7 @@ export default function Walker() {
     y: 0,
     tx: 0,
     ty: 0,
-    dir: 0,
+    facing: 1,
     frame: 0,
     walking: false,
     elapsed: 0,
@@ -40,25 +35,23 @@ export default function Walker() {
       };
     }
 
-    function place(x, y) {
-      const { maxX, maxY } = bounds();
-      const nextX = Math.min(maxX, Math.max(0, x));
-      const nextY = Math.min(maxY, Math.max(0, y));
-      state.current.x = nextX;
-      state.current.y = nextY;
-      sprite.style.transform = `translate(${nextX}px, ${nextY}px)`;
+    function paint() {
+      const s = state.current;
+      sprite.style.transform = `translate(${s.x}px, ${s.y}px) scaleX(${s.facing})`;
+      sprite.style.backgroundPosition = `-${s.frame * SIZE}px 0`;
     }
 
-    function paint() {
-      const { dir, frame } = state.current;
-      sprite.style.backgroundPosition = `-${dir * SIZE}px -${frame * SIZE}px`;
+    function place(x, y) {
+      const { maxX, maxY } = bounds();
+      state.current.x = Math.min(maxX, Math.max(0, x));
+      state.current.y = Math.min(maxY, Math.max(0, y));
+      paint();
     }
 
     const { maxX, maxY } = bounds();
     place(maxX / 2, maxY / 2);
     state.current.tx = state.current.x;
     state.current.ty = state.current.y;
-    paint();
 
     let last = performance.now();
     let raf = 0;
@@ -72,7 +65,7 @@ export default function Walker() {
       const dist = Math.hypot(dx, dy);
 
       if (s.walking && dist > 1) {
-        s.dir = facing(dx, dy);
+        if (Math.abs(dx) > 2) s.facing = dx < 0 ? -1 : 1;
         const step = SPEED * dt;
         if (step >= dist) {
           place(s.tx, s.ty);
@@ -84,7 +77,7 @@ export default function Walker() {
           s.elapsed += dt * 1000;
           if (s.elapsed >= FRAME_MS) {
             s.elapsed -= FRAME_MS;
-            s.frame = (s.frame + 1) % ROWS;
+            s.frame = (s.frame + 1) % FRAMES;
           }
         }
         paint();
@@ -101,9 +94,10 @@ export default function Walker() {
     raf = requestAnimationFrame(tick);
 
     function onResize() {
+      const next = bounds();
       place(state.current.x, state.current.y);
-      state.current.tx = Math.min(bounds().maxX, state.current.tx);
-      state.current.ty = Math.min(bounds().maxY, state.current.ty);
+      state.current.tx = Math.min(next.maxX, state.current.tx);
+      state.current.ty = Math.min(next.maxY, state.current.ty);
     }
 
     window.addEventListener("resize", onResize);
@@ -119,15 +113,11 @@ export default function Walker() {
     const rect = panel.getBoundingClientRect();
     const point = event.changedTouches ? event.changedTouches[0] : event;
     const s = state.current;
-    s.tx = point.clientX - rect.left - SIZE / 2;
-    s.ty = point.clientY - rect.top - SIZE / 2;
-    const { maxX, maxY } = {
-      maxX: Math.max(0, panel.clientWidth - SIZE),
-      maxY: Math.max(0, panel.clientHeight - SIZE),
-    };
-    s.tx = Math.min(maxX, Math.max(0, s.tx));
-    s.ty = Math.min(maxY, Math.max(0, s.ty));
-    s.dir = facing(s.tx - s.x, s.ty - s.y);
+    const maxX = Math.max(0, panel.clientWidth - SIZE);
+    const maxY = Math.max(0, panel.clientHeight - SIZE);
+    s.tx = Math.min(maxX, Math.max(0, point.clientX - rect.left - SIZE / 2));
+    s.ty = Math.min(maxY, Math.max(0, point.clientY - rect.top - SIZE / 2));
+    if (Math.abs(s.tx - s.x) > 2) s.facing = s.tx < s.x ? -1 : 1;
     s.walking = true;
   }
 
@@ -145,7 +135,7 @@ export default function Walker() {
         style={{
           width: SIZE,
           height: SIZE,
-          backgroundSize: `${SHEET}px ${SHEET}px`,
+          backgroundSize: `${SHEET_W}px ${SHEET_H}px`,
         }}
       />
       <p className="portal-hint">Click to walk</p>
