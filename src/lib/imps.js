@@ -45,12 +45,50 @@ export function localImpSrc(tokenId) {
   return "";
 }
 
+export function ipfsPath(url) {
+  if (!url) return "";
+  const value = String(url);
+  if (value.startsWith("ipfs://")) return value.slice("ipfs://".length);
+  const match = value.match(/\/ipfs\/([^?#]+)/i);
+  return match ? match[1] : "";
+}
+
+export function proxiedIpfsSrc(path) {
+  if (!path) return "";
+  return `/api/ipfs/${path.replace(/^\/+/, "")}`;
+}
+
 export function remoteImpSrc(tokenId) {
-  return `https://ipfs.io/ipfs/${IMP_IMAGE_CID}/${tokenId}`;
+  return proxiedIpfsSrc(`${IMP_IMAGE_CID}/${tokenId}`);
+}
+
+export function pinataImpSrc(tokenId) {
+  return `https://gateway.pinata.cloud/ipfs/${IMP_IMAGE_CID}/${tokenId}`;
 }
 
 export function impImageSrc(tokenId, remote = "") {
-  return localImpSrc(tokenId) || remote || remoteImpSrc(tokenId);
+  return localImpSrc(tokenId) || remoteImpSrc(tokenId) || remote || pinataImpSrc(tokenId);
+}
+
+export function impImageCandidates(tokenId, remote = "") {
+  const seen = new Set();
+  const list = [];
+  const add = (src) => {
+    if (src && !seen.has(src)) {
+      seen.add(src);
+      list.push(src);
+    }
+  };
+  add(localImpSrc(tokenId));
+  add(remoteImpSrc(tokenId));
+  add(pinataImpSrc(tokenId));
+  const remotePath = ipfsPath(remote);
+  if (remotePath) {
+    add(proxiedIpfsSrc(remotePath));
+    add(`https://gateway.pinata.cloud/ipfs/${remotePath}`);
+  }
+  add(remote);
+  return list;
 }
 
 function sameAddress(a, b) {
@@ -68,6 +106,11 @@ export async function fetchImpBalance(owner) {
   return Number(balance);
 }
 
+function cleanName(id, name) {
+  if (!name || /pre.?reveal/i.test(name)) return "Implingz #" + id;
+  return name;
+}
+
 async function fetchFromBlockscout(owner) {
   const items = [];
   let url =
@@ -83,10 +126,11 @@ async function fetchFromBlockscout(owner) {
     for (const item of data.items || []) {
       const ownerHash = item.owner?.hash;
       if (ownerHash && !sameAddress(ownerHash, owner)) continue;
+      const id = String(item.id);
       items.push({
-        id: String(item.id),
-        image: item.image_url || remoteImpSrc(item.id),
-        name: item.metadata?.name || "Implingz #" + item.id,
+        id,
+        image: remoteImpSrc(id),
+        name: cleanName(id, item.metadata?.name),
       });
     }
     const next = data.next_page_params;

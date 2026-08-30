@@ -1,4 +1,7 @@
 {
   "framework": "vite",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/api/ipfs/:path*", "destination": "/api/ipfs" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

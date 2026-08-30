@@ -9,5 +9,12 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
+    proxy: {
+      "/api/ipfs": {
+        target: "https://gateway.pinata.cloud",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/ipfs/, "/ipfs"),
+      },
+    },
   },
 });

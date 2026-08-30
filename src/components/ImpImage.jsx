@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { impImageSrc, remoteImpSrc } from "../lib/imps.js";
+import { impImageCandidates } from "../lib/imps.js";
 
 export default function ImpImage({ tokenId, remote, alt }) {
-  const local = impImageSrc(tokenId, "");
-  const fallback = remote || remoteImpSrc(tokenId);
-  const [src, setSrc] = useState(local || fallback || "");
+  const candidates = impImageCandidates(tokenId, remote);
+  const [index, setIndex] = useState(0);
+  const src = candidates[index] || "";
 
   useEffect(() => {
-    setSrc(local || fallback || "");
-  }, [local, fallback]);
+    setIndex(0);
+  }, [tokenId, remote]);
 
   if (!src) return null;
 
@@ -17,7 +17,7 @@ export default function ImpImage({ tokenId, remote, alt }) {
       src={src}
       alt={alt}
       onError={() => {
-        if (fallback && src !== fallback) setSrc(fallback);
+        setIndex((current) => (current + 1 < candidates.length ? current + 1 : current));
       }}
     />
   );
