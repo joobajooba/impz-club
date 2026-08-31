@@ -3,7 +3,7 @@ import ImpImage from "../components/ImpImage.jsx";
 import { daysSince, joinedAtFromProfile, loadClub } from "../lib/db.js";
 import { shortAddress } from "../lib/imps.js";
 
-const ZERO = /^0x0+$/;
+const ZERO = /^0x0+1?$/;
 
 export default function Community() {
   const [rows, setRows] = useState([]);
