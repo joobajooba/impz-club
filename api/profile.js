@@ -72,6 +72,14 @@ export default async function handler(req, res) {
       return;
     }
 
+    if (req.method === "GET" && url.searchParams.get("club") === "1") {
+      const rows = await supabase(
+        `profiles?select=wallet,username,pfp_id,total_impz,account_age,updated_at&limit=2000`
+      );
+      json(res, 200, rows || []);
+      return;
+    }
+
     if (req.method === "GET") {
       if (!wallet) {
         json(res, 400, { error: "Missing wallet" });

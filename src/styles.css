@@ -372,6 +372,88 @@ main.blank {
   display: block;
 }
 
+main.club {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--page-pad-y) var(--page-pad-x);
+}
+
+.club-wrap {
+  width: min(960px, 100%);
+}
+
+.club-wrap h2 {
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.club-status {
+  color: #c8c8c8;
+  margin-bottom: 12px;
+}
+
+.club-error {
+  color: #ff8a7a;
+}
+
+.club-table-wrap {
+  overflow-x: auto;
+  border: 2px solid var(--line);
+}
+
+.club-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.club-table th,
+.club-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #4a1f22;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.club-table th {
+  color: #ffb3a0;
+  font-weight: 500;
+  font-size: 0.85rem;
+  background: #140809;
+}
+
+.club-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.club-table td {
+  font-size: 0.9rem;
+}
+
+.club-pfp {
+  width: 56px;
+}
+
+.club-pfp img,
+.club-pfp-empty {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  background: #1a1a1a;
+}
+
+.club-pfp-empty {
+  box-shadow: inset 0 0 0 1px #3a1014;
+}
+
 main.portal {
   display: flex;
   justify-content: center;
@@ -849,6 +931,10 @@ dialog.site-dialog::backdrop {
   main.profile {
     align-items: flex-start;
     padding-top: 16px;
+  }
+
+  main.club {
+    padding: 16px 12px calc(var(--inv-h) + 12px);
   }
 
   main.portal {

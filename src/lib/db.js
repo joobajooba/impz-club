@@ -32,6 +32,10 @@ export async function loadLeaderboard() {
   return (await profileRequest("?board=1")) || [];
 }
 
+export async function loadClub() {
+  return (await profileRequest("?club=1")) || [];
+}
+
 export async function saveProfile(address, fields) {
   return profileRequest("", {
     method: "POST",
