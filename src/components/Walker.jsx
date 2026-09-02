@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 const CELL = 16;
 const DIRS = 4;
 const WALK_FRAMES = 4;
-const SCALE = 4;
+const SCALE = 2;
 const SIZE = CELL * SCALE;
 const IDLE_SHEET_W = SIZE * DIRS;
 const IDLE_SHEET_H = SIZE;
