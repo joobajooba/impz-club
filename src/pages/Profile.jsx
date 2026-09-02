@@ -26,8 +26,10 @@ export default function Profile() {
   const [accountAge, setAccountAge] = useState("");
   const [imps, setImps] = useState([]);
   const [status, setStatus] = useState("");
+  const [nftStatus, setNftStatus] = useState("");
   const [loadError, setLoadError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingNfts, setLoadingNfts] = useState(false);
 
   function cacheLocal(key, value) {
     try {
@@ -57,13 +59,17 @@ export default function Profile() {
       setAccountAge("");
       setImps([]);
       setLoadError("");
+      setNftStatus("");
       setLoading(false);
+      setLoadingNfts(false);
       return;
     }
 
     let cancelled = false;
     setLoading(true);
+    setLoadingNfts(true);
     setLoadError("");
+    setNftStatus("Loading Impz…");
 
     let localName = "";
     let localPfp = "";
@@ -102,7 +108,7 @@ export default function Profile() {
         setImpCoins(nextCoins);
         setAccountAge(String(ageDays));
 
-        await persist({
+        persist({
           username: nextUsername || null,
           pfp_id: nextPfp || null,
           total_impz: String(ownedCount),
@@ -115,6 +121,25 @@ export default function Profile() {
         if (!cancelled) setLoadError("Could not load wallet profile. Try again.");
       } finally {
         if (!cancelled) setLoading(false);
+      }
+
+      try {
+        const owned = await fetchOwnedImps(address);
+        if (cancelled) return;
+        setImps(owned);
+        setNftStatus(owned.length ? "" : "No Impz in this wallet");
+        setTotalImpz(String(owned.length));
+        const board = await loadLeaderboard().catch(() => []);
+        const nextRank = rankFromLeaderboard(address, owned.length, board);
+        setRank(nextRank);
+        persist({
+          total_impz: String(owned.length),
+          rank: nextRank,
+        });
+      } catch {
+        if (!cancelled) setNftStatus("Could not load Impz from this wallet");
+      } finally {
+        if (!cancelled) setLoadingNfts(false);
       }
     })();
 
@@ -143,29 +168,13 @@ export default function Profile() {
     picker.current?.close();
   }
 
-  async function openPicker() {
+  function openPicker() {
     if (!isConnected) {
       open();
       return;
     }
     picker.current?.showModal();
-    setStatus("Loading Impz…");
-    setImps([]);
-    try {
-      const owned = await fetchOwnedImps(address);
-      setImps(owned);
-      setStatus(owned.length ? "" : "No Impz in this wallet");
-      setTotalImpz(String(owned.length));
-      const board = await loadLeaderboard();
-      const nextRank = rankFromLeaderboard(address, owned.length, board);
-      setRank(nextRank);
-      persist({
-        total_impz: String(owned.length),
-        rank: nextRank,
-      }).catch(() => {});
-    } catch {
-      setStatus("Could not load Impz from this wallet");
-    }
+    setStatus(imps.length ? "" : loadingNfts ? "Loading Impz…" : "No Impz in this wallet");
   }
 
   const selected = imps.find((imp) => imp.id === pfpId);
@@ -173,33 +182,21 @@ export default function Profile() {
   return (
     <main className="profile">
       <div id="profile-app">
-        <div className="profile-grid">
-          <button type="button" className="profile-box profile-pic" onClick={openPicker}>
+        <div className="profile-banner">
+          <img src="/sneakpeek.gif" alt="" />
+        </div>
+
+        <div className="profile-identity">
+          <button type="button" className="profile-avatar" onClick={openPicker} title="Choose an Imp">
             {pfpId ? (
               <ImpImage tokenId={pfpId} remote={selected?.image} alt={"Implingz #" + pfpId} />
             ) : (
               <span>{isConnected ? "Choose an Imp" : "profile picture"}</span>
             )}
           </button>
-
-          <div className="profile-stats">
-            <div className="profile-box stat">
-              <span className="stat-label">User Rank</span>
-              <span className="stat-value">{loading ? "…" : rank ? `#${rank}` : "—"}</span>
-            </div>
-            <div className="profile-box stat">
-              <span className="stat-label">Total Impz</span>
-              <span className="stat-value">{loading ? "…" : totalImpz || "—"}</span>
-            </div>
-            <div className="profile-box stat">
-              <span className="stat-label">Total imp coins</span>
-              <span className="stat-value">{loading ? "…" : impCoins || "0"}</span>
-            </div>
-          </div>
-
-          <div className="profile-under">
+          <div className="profile-id-meta">
             <input
-              className="profile-box"
+              className="profile-username"
               type="text"
               maxLength={24}
               placeholder={isConnected ? "set a username" : "username"}
@@ -208,20 +205,59 @@ export default function Profile() {
               onChange={(event) => saveUsername(event.target.value)}
               aria-label="Username"
             />
-            <ConnectWallet className="profile-box profile-wallet" />
+            <ConnectWallet className="profile-wallet-chip" />
           </div>
+        </div>
 
-          <div className="profile-box profile-age stat">
+        <div className="profile-stat-row">
+          <div className="profile-stat-card">
+            <span className="stat-label">User Rank</span>
+            <span className="stat-value">{loading ? "…" : rank ? `#${rank}` : "—"}</span>
+          </div>
+          <div className="profile-stat-card">
+            <span className="stat-label">Total Impz</span>
+            <span className="stat-value">{loading ? "…" : totalImpz || "—"}</span>
+          </div>
+          <div className="profile-stat-card">
+            <span className="stat-label">Total Imp coins</span>
+            <span className="stat-value">{loading ? "…" : impCoins || "0"}</span>
+          </div>
+          <div className="profile-stat-card">
             <span className="stat-label">Account age</span>
             <span className="stat-value">
               {loading ? "…" : accountAge === "" ? "—" : `${accountAge} days`}
             </span>
           </div>
         </div>
+
         {loadError ? <p className="profile-error">{loadError}</p> : null}
         {!isConnected ? (
           <p className="profile-hint">Connect a Reown wallet to load your Impz and save this profile.</p>
         ) : null}
+
+        <section className="profile-nfts">
+          <div className="profile-nfts-head">
+            <h3>Impz</h3>
+            <span>{loadingNfts ? "…" : imps.length}</span>
+          </div>
+          {nftStatus ? <p className="profile-nft-status">{nftStatus}</p> : null}
+          {imps.length ? (
+            <div className="profile-nft-grid">
+              {imps.map((imp) => (
+                <button
+                  key={imp.id}
+                  type="button"
+                  className={"profile-nft-card" + (imp.id === pfpId ? " selected" : "")}
+                  onClick={() => chooseImp(imp)}
+                >
+                  <ImpImage tokenId={imp.id} remote={imp.image} alt={imp.name} />
+                  <strong>{imp.name}</strong>
+                  <span>#{imp.id}</span>
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </section>
       </div>
 
       <dialog
