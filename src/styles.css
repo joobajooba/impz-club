@@ -467,7 +467,13 @@ main.portal {
   width: min(960px, 100%);
   height: min(560px, calc(100dvh - var(--header-h) - var(--inv-h) - 40px));
   min-height: 280px;
-  background: #000;
+  background-color: #d2a68c;
+  background-image: url("/portal-map.gif");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
   border: 2px solid var(--line);
   overflow: hidden;
   cursor: crosshair;
