@@ -485,12 +485,11 @@ main.portal {
   position: absolute;
   top: 0;
   left: 0;
-  background-image: url("/walker.png");
   background-repeat: no-repeat;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   pointer-events: none;
-  will-change: transform;
+  will-change: transform, background-position, background-image;
 }
 
 .portal-hint {

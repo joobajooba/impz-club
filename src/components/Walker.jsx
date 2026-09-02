@@ -1,13 +1,25 @@
 import { useEffect, useRef } from "react";
 
-const CELL = 64;
-const FRAMES = 2;
-const SCALE = 1;
+const CELL = 16;
+const DIRS = 4;
+const WALK_FRAMES = 4;
+const SCALE = 4;
 const SIZE = CELL * SCALE;
-const SHEET_W = SIZE * FRAMES;
-const SHEET_H = SIZE;
+const IDLE_SHEET_W = SIZE * DIRS;
+const IDLE_SHEET_H = SIZE;
+const WALK_SHEET_W = SIZE * DIRS;
+const WALK_SHEET_H = SIZE * WALK_FRAMES;
 const SPEED = 130;
-const FRAME_MS = 160;
+const WALK_MS = 120;
+const IDLE_MS = 280;
+
+const IDLE_SRC = "/walker-idle.png";
+const WALK_SRC = "/walker-walk.png";
+
+function facing(dx, dy) {
+  if (Math.abs(dx) > Math.abs(dy)) return dx < 0 ? 2 : 3;
+  return dy < 0 ? 1 : 0;
+}
 
 export default function Walker() {
   const panelRef = useRef(null);
@@ -17,10 +29,11 @@ export default function Walker() {
     y: 0,
     tx: 0,
     ty: 0,
-    facing: 1,
+    dir: 0,
     frame: 0,
     walking: false,
     elapsed: 0,
+    idleFrame: 0,
   });
 
   useEffect(() => {
@@ -37,8 +50,18 @@ export default function Walker() {
 
     function paint() {
       const s = state.current;
-      sprite.style.transform = `translate(${s.x}px, ${s.y}px) scaleX(${s.facing})`;
-      sprite.style.backgroundPosition = `-${s.frame * SIZE}px 0`;
+      sprite.style.transform = `translate(${s.x}px, ${s.y}px)`;
+      if (s.walking) {
+        sprite.style.backgroundImage = `url(${WALK_SRC})`;
+        sprite.style.backgroundSize = `${WALK_SHEET_W}px ${WALK_SHEET_H}px`;
+        sprite.style.backgroundPosition = `-${s.dir * SIZE}px -${s.frame * SIZE}px`;
+      } else {
+        sprite.style.backgroundImage = `url(${IDLE_SRC})`;
+        sprite.style.backgroundSize = `${IDLE_SHEET_W}px ${IDLE_SHEET_H}px`;
+        sprite.style.backgroundPosition = `-${s.dir * SIZE}px 0`;
+        const bob = s.idleFrame ? 1 : 0;
+        sprite.style.transform = `translate(${s.x}px, ${s.y + bob}px)`;
+      }
     }
 
     function place(x, y) {
@@ -65,7 +88,7 @@ export default function Walker() {
       const dist = Math.hypot(dx, dy);
 
       if (s.walking && dist > 1) {
-        if (Math.abs(dx) > 2) s.facing = dx < 0 ? -1 : 1;
+        s.dir = facing(dx, dy);
         const step = SPEED * dt;
         if (step >= dist) {
           place(s.tx, s.ty);
@@ -75,9 +98,9 @@ export default function Walker() {
         } else {
           place(s.x + (dx / dist) * step, s.y + (dy / dist) * step);
           s.elapsed += dt * 1000;
-          if (s.elapsed >= FRAME_MS) {
-            s.elapsed -= FRAME_MS;
-            s.frame = (s.frame + 1) % FRAMES;
+          if (s.elapsed >= WALK_MS) {
+            s.elapsed -= WALK_MS;
+            s.frame = (s.frame + 1) % WALK_FRAMES;
           }
         }
         paint();
@@ -86,6 +109,13 @@ export default function Walker() {
         s.frame = 0;
         s.elapsed = 0;
         paint();
+      } else {
+        s.elapsed += dt * 1000;
+        if (s.elapsed >= IDLE_MS) {
+          s.elapsed -= IDLE_MS;
+          s.idleFrame = s.idleFrame ? 0 : 1;
+          paint();
+        }
       }
 
       raf = requestAnimationFrame(tick);
@@ -117,8 +147,10 @@ export default function Walker() {
     const maxY = Math.max(0, panel.clientHeight - SIZE);
     s.tx = Math.min(maxX, Math.max(0, point.clientX - rect.left - SIZE / 2));
     s.ty = Math.min(maxY, Math.max(0, point.clientY - rect.top - SIZE / 2));
-    if (Math.abs(s.tx - s.x) > 2) s.facing = s.tx < s.x ? -1 : 1;
+    s.dir = facing(s.tx - s.x, s.ty - s.y);
     s.walking = true;
+    s.frame = 0;
+    s.elapsed = 0;
   }
 
   return (
@@ -135,7 +167,8 @@ export default function Walker() {
         style={{
           width: SIZE,
           height: SIZE,
-          backgroundSize: `${SHEET_W}px ${SHEET_H}px`,
+          backgroundImage: `url(${IDLE_SRC})`,
+          backgroundSize: `${IDLE_SHEET_W}px ${IDLE_SHEET_H}px`,
         }}
       />
       <p className="portal-hint">Click to walk</p>
