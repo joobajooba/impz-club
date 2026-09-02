@@ -59,7 +59,7 @@ export default function Walker() {
         sprite.style.backgroundImage = `url(${IDLE_SRC})`;
         sprite.style.backgroundSize = `${IDLE_SHEET_W}px ${IDLE_SHEET_H}px`;
         sprite.style.backgroundPosition = `-${s.dir * SIZE}px 0`;
-        const bob = s.idleFrame ? 1 : 0;
+        const bob = s.idleFrame ? SCALE : 0;
         sprite.style.transform = `translate(${s.x}px, ${s.y + bob}px)`;
       }
     }
