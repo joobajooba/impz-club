@@ -456,55 +456,50 @@ main.club {
 
 main.portal {
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
-  min-height: 0;
-  padding: 16px;
+  align-items: stretch;
+  gap: var(--main-gap);
 }
 
-.portal-panel {
-  position: relative;
-  width: min(960px, 100%);
-  height: min(560px, calc(100dvh - var(--header-h) - var(--inv-h) - 40px));
-  min-height: 280px;
-  background-color: #d2a68c;
-  background-image: url("/portal-map.gif");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
+.portal-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  width: min(100%, 52rem);
+}
+
+.portal-links a {
+  font: inherit;
+  color: #fff;
+  text-decoration: none;
+  padding: 18px 16px;
   border: 2px solid var(--line);
-  overflow: hidden;
-  cursor: crosshair;
-  user-select: none;
-  touch-action: none;
-}
-
-.portal-walker {
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-repeat: no-repeat;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  pointer-events: none;
-  will-change: transform, background-position, background-image;
-}
-
-.portal-hint {
-  position: absolute;
-  right: 0;
-  bottom: 10px;
-  left: 0;
-  margin: 0;
-  color: #6a6a6a;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  border-radius: 12px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   text-align: center;
-  pointer-events: none;
+  min-height: 96px;
 }
 
+.portal-links a:hover {
+  filter: brightness(1.15);
+  background: rgb(232 90 79 / 18%);
+}
+
+.portal-label {
+  font-size: clamp(1.05rem, 2.2vw, 1.45rem);
+  font-weight: 700;
+}
+
+.portal-detail {
+  color: #c8c8c8;
+  font-size: 0.9rem;
+}
 main.profile {
   display: flex;
   justify-content: center;
@@ -1035,13 +1030,14 @@ dialog.site-dialog::backdrop {
     padding: 16px 12px calc(var(--inv-h) + 12px);
   }
 
+  .portal-links {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
   main.portal {
     padding: 12px;
     padding-bottom: calc(var(--inv-h) + 12px);
-  }
-
-  .portal-panel {
-    height: min(480px, calc(100dvh - var(--header-h) - var(--inv-h) - 36px));
   }
 
   .profile-stat-row {
