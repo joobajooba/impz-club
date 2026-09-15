@@ -5,6 +5,7 @@ import Profile from "./pages/Profile.jsx";
 import Community from "./pages/Community.jsx";
 import Portal from "./pages/Portal.jsx";
 import Collection from "./pages/Collection.jsx";
+import ImpStats from "./pages/ImpStats.jsx";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/community" element={<Community />} />
         <Route path="/official-links" element={<Portal />} />
         <Route path="/collection" element={<Collection />} />
+        <Route path="/imp-stats" element={<ImpStats />} />
       </Route>
     </Routes>
   );

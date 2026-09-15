@@ -3,6 +3,7 @@ import { createPublicClient, defineChain, http } from "viem";
 export const IMP_CONTRACT = "0x81D2D1f0e92285CdD22Aa3cbc6956B6E1724d029";
 export const IMP_SUPPLY = 2222;
 export const IMP_IMAGE_CID = "QmQ67ks5EfM8cLvLJ8UecWBjm9nrxP5x2H8ZDAnPWp1xPF";
+export const IMP_METADATA_CID = "QmZzgUvbBUvJqxyQGdz7Gi4tgy6pybSc9eGoU21atBNNwq";
 
 const robinhoodViem = defineChain({
   id: 4663,
@@ -30,6 +31,16 @@ const balanceOfAbi = [
     stateMutability: "view",
     inputs: [{ name: "owner", type: "address" }],
     outputs: [{ type: "uint256" }],
+  },
+];
+
+const tokenUriAbi = [
+  {
+    type: "function",
+    name: "tokenURI",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ type: "string" }],
   },
 ];
 
@@ -106,6 +117,73 @@ export async function fetchImpBalance(owner) {
 function cleanName(id, name) {
   if (!name || /pre.?reveal/i.test(name)) return "Implingz #" + id;
   return name;
+}
+
+export function parseImpId(value) {
+  const match = String(value || "").match(/(\d{1,4})/);
+  if (!match) return null;
+  const n = Number(match[1]);
+  if (!Number.isInteger(n) || n < 1 || n > IMP_SUPPLY) return null;
+  return n;
+}
+
+export function openseaImpUrl(tokenId) {
+  return `https://opensea.io/item/robinhood/${IMP_CONTRACT}/${tokenId}`;
+}
+
+function normalizeTraits(data) {
+  const raw = data?.attributes || data?.traits || [];
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+      const type = item.trait_type || item.traitType || item.type || "";
+      const value = item.value ?? "";
+      if (!String(type) && value === "") return null;
+      return { type: String(type || "Trait"), value: String(value) };
+    })
+    .filter(Boolean);
+}
+
+async function readJson(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Could not load Imp");
+  return res.json();
+}
+
+export async function fetchImpMetadata(tokenId) {
+  const id = parseImpId(tokenId);
+  if (!id) throw new Error("Enter an Imp ID between 1 and 2222.");
+
+  const urls = [`/api/ipfs/${IMP_METADATA_CID}/${id}`, pinataFromIpfs(`${IMP_METADATA_CID}/${id}`)];
+  let data = null;
+
+  for (const url of urls) {
+    try {
+      data = await readJson(url);
+      if (data) break;
+    } catch {}
+  }
+
+  if (!data) {
+    const uri = await rhClient.readContract({
+      address: IMP_CONTRACT,
+      abi: tokenUriAbi,
+      functionName: "tokenURI",
+      args: [BigInt(id)],
+    });
+    const remote = pinataFromIpfs(uri);
+    if (!remote) throw new Error("Could not load that Imp.");
+    data = await readJson(remote);
+  }
+
+  return {
+    id: String(id),
+    name: cleanName(id, data.name),
+    image: data.image || pinataImpSrc(id),
+    traits: normalizeTraits(data),
+    opensea: openseaImpUrl(id),
+  };
 }
 
 async function fetchFromBlockscout(owner) {

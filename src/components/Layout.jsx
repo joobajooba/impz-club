@@ -8,6 +8,7 @@ const NAV = [
   { to: "/community", title: "Club", src: "/nav-club.png", alt: "Club" },
   { to: "/official-links", title: "Portal", src: "/nav-portal.png", alt: "Portal" },
   { to: "/collection", title: "Collection", src: "/nav-collection.png", alt: "Collection" },
+  { to: "/imp-stats", title: "Imp Stats", src: "/nav-stats.png", alt: "Imp Stats" },
 ];
 
 export default function Layout() {
