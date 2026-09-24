@@ -359,11 +359,16 @@ main {
   width: 100%;
 }
 
-.box img {
+.box img,
+.box video {
   display: block;
   width: 100%;
   height: auto;
-  object-fit: contain;
+  aspect-ratio: 267 / 233;
+  object-fit: cover;
+}
+
+.box img {
   image-rendering: pixelated;
 }
 

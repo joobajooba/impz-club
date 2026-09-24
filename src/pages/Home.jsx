@@ -44,7 +44,14 @@ export default function Home() {
           </div>
         </section>
         <div className="box">
-          <img src="/sneakpeek.gif" alt="Sneak peek" />
+          <video
+            src="/sneakpeek.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-label="Sneak peek"
+          />
         </div>
       </main>
 
