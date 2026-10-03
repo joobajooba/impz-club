@@ -1,18 +1,15 @@
 export default function App() {
   return (
     <>
-      <div className="orbs" aria-hidden="true">
-        <span>.</span>
-        <span>.</span>
-        <span>.</span>
-        <span>.</span>
-      </div>
+      <div className="stars" aria-hidden="true" />
+      <div className="stars2" aria-hidden="true" />
+      <div className="stars3" aria-hidden="true" />
       <main className="stage">
         <h1>
           <span>Club</span>
-          <img src="/imp.png" alt="" />
           <span>Impz</span>
         </h1>
+        <img src="/imp.png" alt="Club Impz character" />
       </main>
     </>
   );
