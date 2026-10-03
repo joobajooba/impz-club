@@ -3,15 +3,27 @@ import { NavLink, Route, Routes } from "react-router-dom";
 import ConnectWallet from "./components/ConnectWallet.jsx";
 
 const NAV = [
-  { to: "/", label: "Hub", end: true },
-  { to: "/team", label: "The Team" },
-  { to: "/imp-viewer", label: "Imp Viewer" },
-  { to: "/collection", label: "Collection" },
-  { to: "/imp-merchant", label: "Imp Merchant" },
-  { to: "/roadmap", label: "Roadmap" },
-  { to: "/official-links", label: "Official Links" },
-  { to: "/faqs", label: "FAQs" },
-  { to: "/community", label: "Community" },
+  {
+    label: "Imp Tools",
+    items: [
+      { to: "/imp-viewer", label: "Imp Viewer" },
+      { to: "/collection", label: "Collection" },
+      { to: "/merchant", label: "Merchant" },
+    ],
+  },
+  {
+    label: "Information",
+    items: [
+      { to: "/roadmap", label: "Roadmap" },
+      { to: "/official-links", label: "Official Links" },
+      { to: "/team", label: "The Team" },
+      { to: "/faqs", label: "FAQs" },
+    ],
+  },
+  {
+    label: "Community",
+    items: [{ to: "/community", label: "Community List" }],
+  },
 ];
 
 function Stars() {
@@ -74,11 +86,23 @@ function Shell() {
       </header>
       {open ? <button type="button" className="scrim" aria-label="Close navigation" onClick={() => setOpen(false)} /> : null}
       <aside id="site-nav" className={open ? "sidebar open" : "sidebar"}>
+        <button type="button" className="sidebar-close" aria-label="Close navigation" onClick={() => setOpen(false)}>
+          <span />
+          <span />
+        </button>
         <nav>
-          {NAV.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end} onClick={() => setOpen(false)}>
-              {item.label}
-            </NavLink>
+          <NavLink to="/" end onClick={() => setOpen(false)}>
+            Hub
+          </NavLink>
+          {NAV.map((group) => (
+            <div className="nav-group" key={group.label}>
+              <p>{group.label}</p>
+              {group.items.map((item) => (
+                <NavLink key={item.to} to={item.to} onClick={() => setOpen(false)}>
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
       </aside>
@@ -87,6 +111,7 @@ function Shell() {
         <Route path="/team" element={<BlankPage />} />
         <Route path="/imp-viewer" element={<BlankPage />} />
         <Route path="/collection" element={<BlankPage />} />
+        <Route path="/merchant" element={<BlankPage />} />
         <Route path="/imp-merchant" element={<BlankPage />} />
         <Route path="/roadmap" element={<BlankPage />} />
         <Route path="/official-links" element={<BlankPage />} />
