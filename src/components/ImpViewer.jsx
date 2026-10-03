@@ -6,12 +6,8 @@ const AVATARS = [
   { id: 1, label: "Imp 1" },
 ];
 
-const SITE = "https://www.impz.club";
-
 export default function ImpViewer() {
   const [id, setId] = useState(0);
-  const glb = `${SITE}/avatars/${id}.glb`;
-  const mml = `${SITE}/avatars/${id}.mml`;
 
   return (
     <main className="viewer-page">
@@ -29,10 +25,6 @@ export default function ImpViewer() {
             {avatar.label}
           </button>
         ))}
-      </div>
-      <div className="viewer-files">
-        <a href={glb}>{glb}</a>
-        <a href={mml}>{mml}</a>
       </div>
       <div className="viewer-stage">
         <model-viewer

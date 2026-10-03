@@ -352,24 +352,6 @@ body,
   --poster-color: transparent;
 }
 
-.viewer-files {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  width: min(920px, 100%);
-}
-
-.viewer-files a {
-  color: rgba(255, 255, 255, 0.82);
-  font-family: system-ui, sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  text-align: center;
-  text-decoration: none;
-  word-break: break-all;
-}
-
 .sidebar a {
   padding: 10px 12px;
   border-radius: 10px;
