@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { NavLink, Route, Routes } from "react-router-dom";
 import ConnectWallet from "./components/ConnectWallet.jsx";
+
+const ImpViewer = lazy(() => import("./components/ImpViewer.jsx"));
 
 function Icon({ children }) {
   return (
@@ -198,7 +200,14 @@ function Shell() {
       <Routes>
         <Route path="/" element={<Hub />} />
         <Route path="/team" element={<BlankPage />} />
-        <Route path="/imp-viewer" element={<BlankPage />} />
+        <Route
+          path="/imp-viewer"
+          element={
+            <Suspense fallback={<main className="viewer-page"><h1>Imp Viewer</h1></main>}>
+              <ImpViewer />
+            </Suspense>
+          }
+        />
         <Route path="/collection" element={<BlankPage />} />
         <Route path="/merchant" element={<BlankPage />} />
         <Route path="/imp-merchant" element={<BlankPage />} />

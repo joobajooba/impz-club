@@ -5,6 +5,22 @@
       "source": "/api/ipfs/:path*",
       "destination": "https://gateway.pinata.cloud/ipfs/:path*"
     },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/((?!api/|avatars/).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/avatars/(.*).glb",
+      "headers": [
+        { "key": "Content-Type", "value": "model/gltf-binary" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/avatars/(.*).mml",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
   ]
 }
