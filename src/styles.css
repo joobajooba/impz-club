@@ -150,6 +150,287 @@ body,
 
 .wallet-slot {
   width: 44px;
+  padding: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.wallet-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-pop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.profile-pop-scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.72);
+  cursor: pointer;
+}
+
+.profile-card {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  gap: 14px;
+  width: min(980px, 100%);
+  height: auto;
+  max-height: calc(100dvh - 40px);
+  padding: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  border-radius: 16px;
+  background: #12141c;
+}
+
+.profile-side,
+.profile-main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.profile-name-row,
+.profile-badges,
+.profile-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-username,
+.profile-level,
+.profile-emblem,
+.profile-title,
+.profile-portrait,
+.profile-panel,
+.profile-tabs button {
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.72);
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.profile-username,
+.profile-level,
+.profile-emblem,
+.profile-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 12px;
+}
+
+.profile-username,
+.profile-title {
+  flex: 1;
+}
+
+.profile-username.set {
+  color: #fff;
+}
+
+.profile-emblem,
+.profile-title {
+  min-height: 66px;
+}
+
+.profile-level {
+  gap: 6px;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.profile-level svg {
+  width: 16px;
+  height: 16px;
+}
+
+.profile-portrait {
+  width: 100%;
+  aspect-ratio: 1;
+  flex: none;
+  overflow: hidden;
+  display: grid;
+}
+
+.profile-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.profile-emblem {
+  width: 34%;
+  flex: none;
+}
+
+.profile-tabs {
+  flex-wrap: wrap;
+}
+
+.profile-tabs button {
+  min-height: 40px;
+  padding: 0 12px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.profile-tabs button.active {
+  background: #fff;
+  color: #090a0f;
+}
+
+.profile-close {
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.profile-close span {
+  grid-area: 1 / 1;
+  width: 16px;
+  height: 2px;
+  background: #fff;
+}
+
+.profile-close span:first-child {
+  transform: rotate(45deg);
+}
+
+.profile-close span:last-child {
+  transform: rotate(-45deg);
+}
+
+.profile-panel {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.profile-panel::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  left: 16px;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+}
+
+.profile-editor {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100%;
+  padding: 16px 16px 16px 34px;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+}
+
+.profile-editor p,
+.profile-editor-label,
+.profile-editor label {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.profile-editor-row {
+  display: flex;
+  gap: 8px;
+}
+
+.profile-editor input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  border-radius: 8px;
+  background: rgba(9, 10, 15, 0.72);
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.profile-editor > button {
+  align-self: flex-start;
+}
+
+.profile-editor button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 2px solid #fff;
+  border-radius: 8px;
+  background: #fff;
+  color: #090a0f;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-editor button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.profile-editor-status {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.profile-nft-pick {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 8px;
+}
+
+.profile-nft-pick button {
+  aspect-ratio: 1;
+  min-height: 0;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.profile-nft-pick button.selected {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.profile-nft-pick img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .scrim {
@@ -424,6 +705,26 @@ body,
 
   .wallet-slot {
     flex-shrink: 0;
+  }
+
+  .profile-pop {
+    padding: 12px;
+  }
+
+  .profile-card {
+    grid-template-columns: 1fr;
+    height: auto;
+    max-height: calc(100dvh - 24px);
+    overflow: auto;
+  }
+
+  .profile-portrait {
+    width: min(100%, 320px);
+    margin: 0 auto;
+  }
+
+  .profile-panel {
+    min-height: 220px;
   }
 
   .stage h1 {

@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { NavLink, Route, Routes } from "react-router-dom";
 import ConnectWallet from "./components/ConnectWallet.jsx";
+import ProfileButton from "./components/ProfileButton.jsx";
 
 const ImpViewer = lazy(() => import("./components/ImpViewer.jsx"));
 
@@ -169,7 +170,7 @@ function Shell() {
         </button>
         <div className="topbar-right">
           <ConnectWallet className="wallet-button" />
-          <div className="wallet-slot" />
+          <ProfileButton />
         </div>
       </header>
       {open ? <button type="button" className="scrim" aria-label="Close navigation" onClick={() => setOpen(false)} /> : null}
