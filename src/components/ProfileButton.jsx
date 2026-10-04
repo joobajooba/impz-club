@@ -184,6 +184,7 @@ export default function ProfileButton() {
   const [rank, setRank] = useState("");
   const [accountAge, setAccountAge] = useState("");
   const [totalImpz, setTotalImpz] = useState("");
+  const [impCoins, setImpCoins] = useState("");
   const [tiers, setTiers] = useState({ 1: 0, 2: 0, 3: 0 });
   const [imps, setImps] = useState([]);
   const [ownedStatus, setOwnedStatus] = useState("");
@@ -197,6 +198,7 @@ export default function ProfileButton() {
     setRank(row.rank == null || row.rank === "" ? "" : String(row.rank));
     setAccountAge(row.account_age || "");
     setTotalImpz(row.total_impz == null || row.total_impz === "" ? "" : String(row.total_impz));
+    setImpCoins(row.imp_coins == null || row.imp_coins === "" ? "0" : String(row.imp_coins));
     setTiers({
       1: Number(row.tier_1) || 0,
       2: Number(row.tier_2) || 0,
@@ -213,6 +215,7 @@ export default function ProfileButton() {
       setRank("");
       setAccountAge("");
       setTotalImpz("");
+      setImpCoins("");
       setTiers({ 1: 0, 2: 0, 3: 0 });
       setImps([]);
       return undefined;
@@ -235,6 +238,7 @@ export default function ProfileButton() {
       if (detail.address && String(detail.address).toLowerCase() !== String(address).toLowerCase()) return;
       if (detail.username != null) setUsername(detail.username);
       if (detail.pfpId != null) setPfpId(detail.pfpId);
+      if (detail.impCoins != null) setImpCoins(String(detail.impCoins));
     }
 
     window.addEventListener("impz-profile", onChange);
@@ -336,6 +340,7 @@ export default function ProfileButton() {
     ["Total Tier 1s", String(tiers[1] || 0)],
     ["Total Tier 2s", String(tiers[2] || 0)],
     ["Total Tier 3s", String(tiers[3] || 0)],
+    ["Imp Coin Balance", impCoins === "" ? "—" : Number(impCoins).toLocaleString("en-US")],
   ];
 
   return (

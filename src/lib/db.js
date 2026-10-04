@@ -36,6 +36,20 @@ export async function loadClub() {
   return (await profileRequest("?club=1")) || [];
 }
 
+export async function loadImpCoins(address) {
+  return profileRequest(`?coins=1&wallet=${encodeURIComponent(walletId(address))}`);
+}
+
+export async function claimImpCoins(address) {
+  return profileRequest("", {
+    method: "POST",
+    body: JSON.stringify({
+      wallet: walletId(address),
+      action: "claim-imp-coins",
+    }),
+  });
+}
+
 export async function saveProfile(address, fields) {
   return profileRequest("", {
     method: "POST",

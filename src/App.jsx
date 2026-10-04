@@ -3,6 +3,7 @@ import { NavLink, Route, Routes } from "react-router-dom";
 import ConnectWallet from "./components/ConnectWallet.jsx";
 import ProfileButton from "./components/ProfileButton.jsx";
 import Community from "./pages/Community.jsx";
+import Merchant from "./pages/Merchant.jsx";
 
 const ImpViewer = lazy(() => import("./components/ImpViewer.jsx"));
 
@@ -211,8 +212,8 @@ function Shell() {
           }
         />
         <Route path="/collection" element={<BlankPage />} />
-        <Route path="/merchant" element={<BlankPage />} />
-        <Route path="/imp-merchant" element={<BlankPage />} />
+        <Route path="/merchant" element={<Merchant />} />
+        <Route path="/imp-merchant" element={<Merchant />} />
         <Route path="/roadmap" element={<BlankPage />} />
         <Route path="/official-links" element={<OfficialLinks />} />
         <Route path="/faqs" element={<BlankPage />} />
