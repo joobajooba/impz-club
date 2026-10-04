@@ -6,6 +6,7 @@ import Community from "./pages/Community.jsx";
 import Merchant from "./pages/Merchant.jsx";
 
 const ImpViewer = lazy(() => import("./components/ImpViewer.jsx"));
+const Collection = lazy(() => import("./pages/Collection.jsx"));
 
 function Icon({ children }) {
   return (
@@ -211,7 +212,14 @@ function Shell() {
             </Suspense>
           }
         />
-        <Route path="/collection" element={<BlankPage />} />
+        <Route
+          path="/collection"
+          element={
+            <Suspense fallback={<main className="browse"><h1>Collection</h1></main>}>
+              <Collection />
+            </Suspense>
+          }
+        />
         <Route path="/merchant" element={<Merchant />} />
         <Route path="/imp-merchant" element={<Merchant />} />
         <Route path="/roadmap" element={<BlankPage />} />
