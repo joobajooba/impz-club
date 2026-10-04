@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import ImpImage from "./ImpImage.jsx";
+import { bioError } from "../lib/bio.js";
 import { daysSince, loadProfile, saveProfile } from "../lib/db.js";
 import { countOwnedTiers, fetchOwnedImps, notifyProfileChange, profileKey } from "../lib/imps.js";
 
@@ -40,15 +41,20 @@ function ageLabel(value) {
   return days === 1 ? "1 day" : `${days} days`;
 }
 
-function EditProfile({ isConnected, username, onSave, onOpenPicker }) {
+function EditProfile({ isConnected, username, bio, onSave, onOpenPicker }) {
   const { open } = useAppKit();
   const [draft, setDraft] = useState(username);
+  const [bioDraft, setBioDraft] = useState(bio);
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     setDraft(username);
   }, [username]);
+
+  useEffect(() => {
+    setBioDraft(bio);
+  }, [bio]);
 
   async function saveUsername() {
     if (saving) return;
@@ -97,6 +103,40 @@ function EditProfile({ isConnected, username, onSave, onOpenPicker }) {
       <button type="button" onClick={onOpenPicker} disabled={saving}>
         Profile Picture
       </button>
+      <label htmlFor="profile-bio-input">Bio</label>
+      <textarea
+        id="profile-bio-input"
+        maxLength={300}
+        value={bioDraft}
+        placeholder="Write a short bio"
+        onChange={(event) => setBioDraft(event.target.value.slice(0, 300))}
+      />
+      <span className="profile-editor-count">{bioDraft.length}/300</span>
+      <button
+        type="button"
+        disabled={saving}
+        onClick={async () => {
+          if (saving) return;
+          const next = bioDraft.trim().slice(0, 300);
+          const problem = bioError(next);
+          if (problem) {
+            setStatus(problem);
+            return;
+          }
+          setSaving(true);
+          setStatus("");
+          try {
+            await onSave({ bio: next });
+            setStatus("Bio saved");
+          } catch (error) {
+            setStatus(error.message || "Could not save bio");
+          } finally {
+            setSaving(false);
+          }
+        }}
+      >
+        Save bio
+      </button>
       {status ? <p className="profile-editor-status">{status}</p> : null}
     </div>
   );
@@ -139,6 +179,7 @@ export default function ProfileButton() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [tab, setTab] = useState("Stats");
   const [username, setUsername] = useState("");
+  const [bio, setBio] = useState("");
   const [pfpId, setPfpId] = useState("");
   const [rank, setRank] = useState("");
   const [accountAge, setAccountAge] = useState("");
@@ -151,6 +192,7 @@ export default function ProfileButton() {
   function applyRow(row) {
     if (!row) return;
     setUsername(row.username || "");
+    setBio(row.bio || "");
     setPfpId(row.pfp_id || "");
     setRank(row.rank == null || row.rank === "" ? "" : String(row.rank));
     setAccountAge(row.account_age || "");
@@ -166,6 +208,7 @@ export default function ProfileButton() {
   useEffect(() => {
     if (!address) {
       setUsername("");
+      setBio("");
       setPfpId("");
       setRank("");
       setAccountAge("");
@@ -252,16 +295,27 @@ export default function ProfileButton() {
   }, [open, pickerOpen]);
 
   async function saveFields(fields) {
-    const nextName = fields.username != null ? fields.username : username;
-    const nextPfp = fields.pfp_id != null ? fields.pfp_id : pfpId;
-    const row = await saveProfile(address, {
-      username: nextName || null,
-      pfp_id: nextPfp || null,
-    });
+    const payload = {};
+    let nextName = username;
+    let nextPfp = pfpId;
+    if (fields.username != null || fields.pfp_id != null) {
+      nextName = fields.username != null ? fields.username : username;
+      nextPfp = fields.pfp_id != null ? fields.pfp_id : pfpId;
+      payload.username = nextName || null;
+      payload.pfp_id = nextPfp || null;
+    }
+    if (fields.bio != null || fields.bio === "") {
+      const nextBio = String(fields.bio || "").trim().slice(0, 300);
+      const problem = bioError(nextBio);
+      if (problem) throw new Error(problem);
+      payload.bio = nextBio || null;
+    }
+    const row = await saveProfile(address, payload);
     applyRow({
       ...row,
       username: row?.username || nextName || "",
       pfp_id: row?.pfp_id || nextPfp || "",
+      bio: row?.bio || payload.bio || "",
     });
   }
 
@@ -354,10 +408,16 @@ export default function ProfileButton() {
                         ))}
                       </div>
                     ) : null}
+                    {tab === "Information" ? (
+                      <div className="profile-info">
+                        <p>{bio || "No bio yet."}</p>
+                      </div>
+                    ) : null}
                     {tab === "Edit Profile" ? (
                       <EditProfile
                         isConnected={isConnected}
                         username={username}
+                        bio={bio}
                         onSave={saveFields}
                         onOpenPicker={() => setPickerOpen(true)}
                       />

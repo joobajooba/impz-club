@@ -1,0 +1,14 @@
+---
+description: Push site changes to GitHub main so Vercel production deploys
+alwaysApply: true
+---
+
+# Push changes
+
+When the user says "push changes", or asks to push so Vercel picks the changes up, commit the current work and deploy production.
+
+- Production follows `main`. A commit that stays on `react-layout` does not update https://www.impz.club.
+- Commit on the current branch, cherry-pick that commit onto `main` if needed, then `git push origin main`.
+- Switch back to the previous branch after the push.
+- Do not force-push.
+- Wait until the Vercel status for that commit is success before saying the live site is updated.
