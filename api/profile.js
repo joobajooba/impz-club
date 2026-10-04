@@ -76,7 +76,7 @@ export default async function handler(req, res) {
 
     if (req.method === "GET" && url.searchParams.get("club") === "1") {
       const rows = await supabase(
-        `profiles?select=wallet,username,pfp_id,total_impz,account_age,updated_at&limit=2000`
+        `profiles?select=wallet,username,pfp_id,rank,total_impz,tier_1,tier_2,tier_3,account_age&limit=2000`
       );
       json(res, 200, rows || []);
       return;

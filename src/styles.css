@@ -746,6 +746,85 @@ body,
   flex-shrink: 0;
 }
 
+.club-page {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 0;
+  padding: 96px 20px 24px;
+}
+
+.club-page h1 {
+  margin: 0 0 18px;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  font-size: clamp(32px, 5vw, 44px);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.club-status {
+  margin: 0;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  font-size: 16px;
+}
+
+.club-table-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  border-radius: 12px;
+  background: #12141c;
+}
+
+.club-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+}
+
+.club-table th,
+.club-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.club-table th {
+  position: sticky;
+  top: 0;
+  background: #1a1d27;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.club-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.club-pfp {
+  width: 72px;
+}
+
+.club-pfp img,
+.club-pfp-empty {
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #1a1d27;
+}
+
 .viewer-page {
   position: relative;
   z-index: 1;

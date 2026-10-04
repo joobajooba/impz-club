@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { NavLink, Route, Routes } from "react-router-dom";
 import ConnectWallet from "./components/ConnectWallet.jsx";
 import ProfileButton from "./components/ProfileButton.jsx";
+import Community from "./pages/Community.jsx";
 
 const ImpViewer = lazy(() => import("./components/ImpViewer.jsx"));
 
@@ -215,7 +216,7 @@ function Shell() {
         <Route path="/roadmap" element={<BlankPage />} />
         <Route path="/official-links" element={<OfficialLinks />} />
         <Route path="/faqs" element={<BlankPage />} />
-        <Route path="/community" element={<BlankPage />} />
+        <Route path="/community" element={<Community />} />
         <Route path="/hall-of-fame" element={<BlankPage />} />
       </Routes>
     </>
