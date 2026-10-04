@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import ImpImage from "./ImpImage.jsx";
-import { loadProfile, saveProfile } from "../lib/db.js";
-import { fetchOwnedImps, notifyProfileChange, profileKey } from "../lib/imps.js";
+import { daysSince, loadProfile, saveProfile } from "../lib/db.js";
+import { countOwnedTiers, fetchOwnedImps, notifyProfileChange, profileKey } from "../lib/imps.js";
 
 const TABS = ["Stats", "Trophies", "Collection", "Information", "Edit Profile"];
 
@@ -18,6 +18,14 @@ function Star() {
   );
 }
 
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M6 6 L18 18 M18 6 L6 18" />
+    </svg>
+  );
+}
+
 function rememberProfile(address, username, pfpId) {
   try {
     localStorage.setItem(profileKey(address, "username"), username || "");
@@ -26,10 +34,15 @@ function rememberProfile(address, username, pfpId) {
   notifyProfileChange({ address, username: username || "", pfpId: pfpId || "" });
 }
 
-function EditProfile({ address, isConnected, username, pfpId, onSave }) {
+function ageLabel(value) {
+  if (!value || Number.isNaN(Date.parse(value))) return "—";
+  const days = daysSince(value);
+  return days === 1 ? "1 day" : `${days} days`;
+}
+
+function EditProfile({ isConnected, username, onSave, onOpenPicker }) {
   const { open } = useAppKit();
   const [draft, setDraft] = useState(username);
-  const [imps, setImps] = useState([]);
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -37,32 +50,8 @@ function EditProfile({ address, isConnected, username, pfpId, onSave }) {
     setDraft(username);
   }, [username]);
 
-  useEffect(() => {
-    if (!address) {
-      setImps([]);
-      setStatus("");
-      return undefined;
-    }
-
-    let cancelled = false;
-    setStatus("Loading Impz from your wallet…");
-    fetchOwnedImps(address)
-      .then((owned) => {
-        if (cancelled) return;
-        setImps(owned);
-        setStatus(owned.length ? "" : "No Impz in this wallet");
-      })
-      .catch(() => {
-        if (!cancelled) setStatus("Could not load Impz from this wallet");
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [address]);
-
   async function saveUsername() {
-    if (!address || saving) return;
+    if (saving) return;
     setSaving(true);
     setStatus("");
     try {
@@ -70,20 +59,6 @@ function EditProfile({ address, isConnected, username, pfpId, onSave }) {
       setStatus("Username saved");
     } catch (error) {
       setStatus(error.message || "Could not save username");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function chooseImp(imp) {
-    if (!address || saving) return;
-    setSaving(true);
-    setStatus("");
-    try {
-      await onSave({ username: draft.trim().slice(0, 24), pfp_id: imp.id });
-      setStatus("Profile picture saved");
-    } catch (error) {
-      setStatus(error.message || "Could not save profile picture");
     } finally {
       setSaving(false);
     }
@@ -119,10 +94,27 @@ function EditProfile({ address, isConnected, username, pfpId, onSave }) {
           Save
         </button>
       </div>
-      <p className="profile-editor-label">Profile picture</p>
+      <button type="button" onClick={onOpenPicker} disabled={saving}>
+        Profile Picture
+      </button>
       {status ? <p className="profile-editor-status">{status}</p> : null}
-      {imps.length ? (
-        <div className="profile-nft-pick">
+    </div>
+  );
+}
+
+function PicturePicker({ imps, status, pfpId, saving, onChoose, onClose }) {
+  return (
+    <div className="profile-picker-pop">
+      <button type="button" className="profile-pop-scrim" aria-label="Close profile picture" onClick={onClose} />
+      <div className="profile-picker" role="dialog" aria-modal="true" aria-label="Profile picture">
+        <div className="profile-picker-head">
+          <h2>Profile Picture</h2>
+          <button type="button" className="profile-close" aria-label="Close profile picture" onClick={onClose}>
+            <CloseIcon />
+          </button>
+        </div>
+        {status ? <p className="profile-editor-status">{status}</p> : null}
+        <div className="profile-picker-grid">
           {imps.map((imp) => (
             <button
               key={imp.id}
@@ -130,13 +122,13 @@ function EditProfile({ address, isConnected, username, pfpId, onSave }) {
               className={imp.id === pfpId ? "selected" : undefined}
               aria-label={`Use ${imp.name} as profile picture`}
               disabled={saving}
-              onClick={() => chooseImp(imp)}
+              onClick={() => onChoose(imp)}
             >
               <ImpImage tokenId={imp.id} remote={imp.image} alt="" />
             </button>
           ))}
         </div>
-      ) : null}
+      </div>
     </div>
   );
 }
@@ -144,14 +136,42 @@ function EditProfile({ address, isConnected, username, pfpId, onSave }) {
 export default function ProfileButton() {
   const { address, isConnected } = useAppKitAccount();
   const [open, setOpen] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [tab, setTab] = useState("Stats");
   const [username, setUsername] = useState("");
   const [pfpId, setPfpId] = useState("");
+  const [rank, setRank] = useState("");
+  const [accountAge, setAccountAge] = useState("");
+  const [totalImpz, setTotalImpz] = useState("");
+  const [tiers, setTiers] = useState({ 1: 0, 2: 0, 3: 0 });
+  const [imps, setImps] = useState([]);
+  const [ownedStatus, setOwnedStatus] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  function applyRow(row) {
+    if (!row) return;
+    setUsername(row.username || "");
+    setPfpId(row.pfp_id || "");
+    setRank(row.rank == null || row.rank === "" ? "" : String(row.rank));
+    setAccountAge(row.account_age || "");
+    setTotalImpz(row.total_impz == null || row.total_impz === "" ? "" : String(row.total_impz));
+    setTiers({
+      1: Number(row.tier_1) || 0,
+      2: Number(row.tier_2) || 0,
+      3: Number(row.tier_3) || 0,
+    });
+    if (address) rememberProfile(address, row.username || "", row.pfp_id || "");
+  }
 
   useEffect(() => {
     if (!address) {
       setUsername("");
       setPfpId("");
+      setRank("");
+      setAccountAge("");
+      setTotalImpz("");
+      setTiers({ 1: 0, 2: 0, 3: 0 });
+      setImps([]);
       return undefined;
     }
 
@@ -163,12 +183,7 @@ export default function ProfileButton() {
 
     loadProfile(address)
       .then((row) => {
-        if (cancelled || !row) return;
-        const nextName = row.username || "";
-        const nextPfp = row.pfp_id || "";
-        setUsername(nextName);
-        setPfpId(nextPfp);
-        rememberProfile(address, nextName, nextPfp);
+        if (!cancelled) applyRow(row);
       })
       .catch(() => {});
 
@@ -187,13 +202,54 @@ export default function ProfileButton() {
   }, [address]);
 
   useEffect(() => {
+    if (!open || !address) return undefined;
+    let cancelled = false;
+    setOwnedStatus("Loading Impz…");
+
+    (async () => {
+      try {
+        const [row, owned] = await Promise.all([
+          loadProfile(address).catch(() => null),
+          fetchOwnedImps(address),
+        ]);
+        if (cancelled) return;
+        applyRow(row);
+        setImps(owned);
+        setOwnedStatus(owned.length ? "" : "No Impz in this wallet");
+        const counted = await countOwnedTiers(owned);
+        if (cancelled) return;
+        const accountStamp =
+          row?.account_age && !Number.isNaN(Date.parse(row.account_age))
+            ? row.account_age
+            : new Date().toISOString();
+        const saved = await saveProfile(address, {
+          total_impz: String(owned.length),
+          tier_1: counted[1],
+          tier_2: counted[2],
+          tier_3: counted[3],
+          account_age: accountStamp,
+        });
+        if (!cancelled) applyRow(saved);
+      } catch {
+        if (!cancelled) setOwnedStatus("Could not load Impz from this wallet");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, address]);
+
+  useEffect(() => {
     if (!open) return undefined;
     function onKey(event) {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Escape") return;
+      if (pickerOpen) setPickerOpen(false);
+      else setOpen(false);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, pickerOpen]);
 
   async function saveFields(fields) {
     const nextName = fields.username != null ? fields.username : username;
@@ -202,12 +258,31 @@ export default function ProfileButton() {
       username: nextName || null,
       pfp_id: nextPfp || null,
     });
-    const savedName = row?.username || nextName || "";
-    const savedPfp = row?.pfp_id || nextPfp || "";
-    setUsername(savedName);
-    setPfpId(savedPfp);
-    rememberProfile(address, savedName, savedPfp);
+    applyRow({
+      ...row,
+      username: row?.username || nextName || "",
+      pfp_id: row?.pfp_id || nextPfp || "",
+    });
   }
+
+  async function chooseImp(imp) {
+    if (!address || saving) return;
+    setSaving(true);
+    try {
+      await saveFields({ pfp_id: imp.id });
+      setPickerOpen(false);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const stats = [
+    ["Account Age", accountAge ? ageLabel(accountAge) : "—"],
+    ["Total Impz", totalImpz === "" ? "—" : totalImpz],
+    ["Total Tier 1s", String(tiers[1] || 0)],
+    ["Total Tier 2s", String(tiers[2] || 0)],
+    ["Total Tier 3s", String(tiers[3] || 0)],
+  ];
 
   return (
     <>
@@ -230,7 +305,7 @@ export default function ProfileButton() {
                     <div className={username ? "profile-username set" : "profile-username"}>{username || "Username"}</div>
                     <div className="profile-level">
                       <Star />
-                      <span>—</span>
+                      <span>{rank || "—"}</span>
                     </div>
                   </div>
                   <div className="profile-portrait">{pfpId ? <ImpImage tokenId={pfpId} alt="" /> : null}</div>
@@ -254,23 +329,52 @@ export default function ProfileButton() {
                       </button>
                     ))}
                     <button type="button" className="profile-close" aria-label="Close profile" onClick={() => setOpen(false)}>
-                      <span />
-                      <span />
+                      <CloseIcon />
                     </button>
                   </div>
-                  <div className={tab === "Edit Profile" ? "profile-panel editing" : "profile-panel"} role="tabpanel">
+                  <div className="profile-panel" role="tabpanel">
+                    {tab === "Stats" ? (
+                      <div className="profile-stats">
+                        {stats.map(([label, value]) => (
+                          <div className="profile-stat" key={label}>
+                            <span>{label}</span>
+                            <strong>{value}</strong>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+                    {tab === "Collection" ? (
+                      <div className="profile-collection">
+                        {!isConnected ? <p>Connect your wallet to see your Impz.</p> : null}
+                        {isConnected && ownedStatus ? <p>{ownedStatus}</p> : null}
+                        {imps.map((imp) => (
+                          <figure key={imp.id}>
+                            <ImpImage tokenId={imp.id} remote={imp.image} alt={imp.name} />
+                          </figure>
+                        ))}
+                      </div>
+                    ) : null}
                     {tab === "Edit Profile" ? (
                       <EditProfile
-                        address={address}
                         isConnected={isConnected}
                         username={username}
-                        pfpId={pfpId}
                         onSave={saveFields}
+                        onOpenPicker={() => setPickerOpen(true)}
                       />
                     ) : null}
                   </div>
                 </div>
               </div>
+              {pickerOpen ? (
+                <PicturePicker
+                  imps={imps}
+                  status={ownedStatus}
+                  pfpId={pfpId}
+                  saving={saving}
+                  onChoose={chooseImp}
+                  onClose={() => setPickerOpen(false)}
+                />
+              ) : null}
             </div>,
             document.body,
           )

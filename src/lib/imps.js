@@ -3,6 +3,7 @@ import { createPublicClient, defineChain, http } from "viem";
 export const IMP_CONTRACT = "0x81D2D1f0e92285CdD22Aa3cbc6956B6E1724d029";
 export const IMP_SUPPLY = 2222;
 export const IMP_IMAGE_CID = "QmQ67ks5EfM8cLvLJ8UecWBjm9nrxP5x2H8ZDAnPWp1xPF";
+export const IMP_METADATA_CID = "QmZzgUvbBUvJqxyQGdz7Gi4tgy6pybSc9eGoU21atBNNwq";
 
 const robinhoodViem = defineChain({
   id: 4663,
@@ -30,6 +31,16 @@ const balanceOfAbi = [
     stateMutability: "view",
     inputs: [{ name: "owner", type: "address" }],
     outputs: [{ type: "uint256" }],
+  },
+];
+
+const tokenUriAbi = [
+  {
+    type: "function",
+    name: "tokenURI",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ type: "string" }],
   },
 ];
 
@@ -108,6 +119,109 @@ function cleanName(id, name) {
   return name;
 }
 
+export function parseImpId(value) {
+  const match = String(value || "").match(/(\d{1,4})/);
+  if (!match) return null;
+  const n = Number(match[1]);
+  if (!Number.isInteger(n) || n < 1 || n > IMP_SUPPLY) return null;
+  return n;
+}
+
+export function openseaImpUrl(tokenId) {
+  return `https://opensea.io/item/robinhood/${IMP_CONTRACT}/${tokenId}`;
+}
+
+function normalizeTraits(data) {
+  const raw = data?.attributes || data?.traits || [];
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+      const type = item.trait_type || item.traitType || item.type || "";
+      const value = item.value ?? "";
+      if (!String(type) && value === "") return null;
+      return { type: String(type || "Trait"), value: String(value) };
+    })
+    .filter(Boolean);
+}
+
+async function readJson(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Could not load Imp");
+  return res.json();
+}
+
+export function tierFromMetadata(data) {
+  const traits = normalizeTraits(data);
+  const tier = traits.find((item) => String(item.type).toLowerCase() === "tier");
+  const match = String(tier?.value || "").match(/tier\s*([123])/i);
+  return match ? Number(match[1]) : null;
+}
+
+async function fetchImpTier(tokenId) {
+  const id = parseImpId(tokenId);
+  if (!id) return 0;
+  const urls = [`/api/ipfs/${IMP_METADATA_CID}/${id}`, pinataFromIpfs(`${IMP_METADATA_CID}/${id}`)];
+  for (const url of urls) {
+    try {
+      const data = await readJson(url);
+      const tier = tierFromMetadata(data);
+      if (tier) return tier;
+    } catch {}
+  }
+  return 0;
+}
+
+export async function countOwnedTiers(imps) {
+  const counts = { 1: 0, 2: 0, 3: 0 };
+  const queue = [...(imps || [])];
+  async function worker() {
+    while (queue.length) {
+      const imp = queue.shift();
+      const tier = imp?.tier == null ? await fetchImpTier(imp?.id) : imp.tier;
+      if (counts[tier]) counts[tier] += 1;
+    }
+  }
+  const workers = Math.min(6, queue.length);
+  await Promise.all(Array.from({ length: workers }, worker));
+  return counts;
+}
+
+export async function fetchImpMetadata(tokenId) {
+  const id = parseImpId(tokenId);
+  if (!id) throw new Error("Enter an Imp ID between 1 and 2222.");
+
+  const urls = [`/api/ipfs/${IMP_METADATA_CID}/${id}`, pinataFromIpfs(`${IMP_METADATA_CID}/${id}`)];
+  let data = null;
+
+  for (const url of urls) {
+    try {
+      data = await readJson(url);
+      if (data) break;
+    } catch {}
+  }
+
+  if (!data) {
+    const uri = await rhClient.readContract({
+      address: IMP_CONTRACT,
+      abi: tokenUriAbi,
+      functionName: "tokenURI",
+      args: [BigInt(id)],
+    });
+    const remote = pinataFromIpfs(uri);
+    if (!remote) throw new Error("Could not load that Imp.");
+    data = await readJson(remote);
+  }
+
+  return {
+    id: String(id),
+    name: cleanName(id, data.name),
+    image: data.image || pinataImpSrc(id),
+    traits: normalizeTraits(data),
+    opensea: openseaImpUrl(id),
+  };
+}
+
 async function fetchFromBlockscout(owner) {
   const items = [];
   let url =
@@ -128,6 +242,7 @@ async function fetchFromBlockscout(owner) {
         id,
         image: pinataImpSrc(id),
         name: cleanName(id, item.metadata?.name),
+        tier: tierFromMetadata(item.metadata),
       });
     }
     const next = data.next_page_params;

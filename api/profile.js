@@ -7,7 +7,7 @@ const SUPABASE_ANON_KEY =
   process.env.SUPABASE_ANON_KEY ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBobGl4dHN4eHVpY2F0bXJtZG91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMzExNTQsImV4cCI6MjEwMzYwNzE1NH0.DMLjjNJir1sHlnlBFIh6FKyOZUkK6a_wL7-8Cf2YlC4";
 
-const PROFILE_COLS = "wallet,username,pfp_id,rank,total_impz,imp_coins,account_age,updated_at";
+const PROFILE_COLS = "wallet,username,pfp_id,rank,total_impz,tier_1,tier_2,tier_3,imp_coins,account_age,updated_at";
 
 function json(res, status, body) {
   res.statusCode = status;
