@@ -66,46 +66,27 @@ function fail(status, error) {
 
 async function claimImpCoins(wallet) {
   if (!WALLET.test(wallet)) throw fail(400, "Missing wallet");
-  const balances = await supabase(
-    `imp_coin_balances?select=portable_imp_coin&wallet_address=eq.${encodeURIComponent(wallet)}`
-  );
-  const balance = Array.isArray(balances) ? balances[0] : null;
-  const portable = Number(balance?.portable_imp_coin) || 0;
-  if (!balance || portable <= 0) throw fail(404, "This wallet has no Imp Coins to claim.");
-
-  let profiles = await supabase(
-    `profiles?select=imp_coins,imp_coin_claimed&wallet=eq.${encodeURIComponent(wallet)}`
-  );
-  let profile = Array.isArray(profiles) ? profiles[0] : null;
-  if (!profile) {
-    await supabase("profiles", {
+  try {
+    await supabase("imp_coin_claims", {
       method: "POST",
-      prefer: "resolution=merge-duplicates,return=representation",
-      body: JSON.stringify({
-        wallet,
-        imp_coins: "0",
-        imp_coin_claimed: false,
-        updated_at: new Date().toISOString(),
-      }),
+      prefer: "return=minimal",
+      body: JSON.stringify({ wallet_address: wallet }),
     });
-    profile = { imp_coins: "0", imp_coin_claimed: false };
-  }
-  if (profile.imp_coin_claimed) throw fail(409, "Imp Coins have already been claimed.");
-
-  const next = (Number(profile.imp_coins) || 0) + portable;
-  const rows = await supabase(
-    `profiles?wallet=eq.${encodeURIComponent(wallet)}&imp_coin_claimed=eq.false`,
-    {
-      method: "PATCH",
-      body: JSON.stringify({
-        imp_coins: String(next),
-        imp_coin_claimed: true,
-        updated_at: new Date().toISOString(),
-      }),
+  } catch (error) {
+    const message = String(error.message || "");
+    if (error.status === 409 || /duplicate key|already been claimed|unique constraint/i.test(message)) {
+      throw fail(409, "Imp Coins have already been claimed.");
     }
+    if (/no Imp Coins|foreign key|row-level security/i.test(message)) {
+      throw fail(404, "This wallet has no Imp Coins to claim.");
+    }
+    throw error;
+  }
+  const rows = await supabase(
+    `profiles?select=${PROFILE_COLS}&wallet=eq.${encodeURIComponent(wallet)}`
   );
   const row = Array.isArray(rows) ? rows[0] : null;
-  if (!row) throw fail(409, "Imp Coins have already been claimed.");
+  if (!row?.imp_coin_claimed) throw fail(409, "Imp Coins have already been claimed.");
   return row;
 }
 
