@@ -3,6 +3,8 @@ import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { claimImpCoins, loadImpCoins } from "../lib/db.js";
 import { notifyProfileChange } from "../lib/imps.js";
 
+const CATEGORIES = ["Whitelist Access", "Imp Items", "Titles", "Emblems", "Other"];
+
 function coins(value) {
   return Number(value || 0).toLocaleString("en-US");
 }
@@ -14,6 +16,7 @@ export default function Merchant() {
   const [loading, setLoading] = useState(false);
   const [claiming, setClaiming] = useState(false);
   const [error, setError] = useState("");
+  const [category, setCategory] = useState(CATEGORIES[0]);
 
   useEffect(() => {
     if (!address) {
@@ -89,7 +92,33 @@ export default function Merchant() {
             {!claimed && portable <= 0 ? <span>This wallet has no Imp Coins to claim.</span> : null}
           </section>
         ) : null}
+        <section className="merchant-welcome">
+          <p>Welcome to the Merchant. Here you can spend your Imp Coins for a variety of cool things!</p>
+        </section>
       </div>
+      <section className="merchant-shop" aria-label="Items for sale">
+        <div className="merchant-filters">
+          {CATEGORIES.map((name) => (
+            <button
+              key={name}
+              type="button"
+              className={category === name ? "active" : ""}
+              aria-pressed={category === name}
+              onClick={() => setCategory(name)}
+            >
+              {name}
+            </button>
+          ))}
+        </div>
+        <div className="merchant-items">
+          {Array.from({ length: 8 }, (_, index) => (
+            <article className="merchant-item" key={`${category}-${index}`}>
+              <div />
+              <span>Placeholder</span>
+            </article>
+          ))}
+        </div>
+      </section>
     </main>
   );
 }
