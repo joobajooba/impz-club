@@ -67,27 +67,29 @@ export default function Merchant() {
 
   return (
     <main className="merchant-page">
-      <h1>Merchant</h1>
-      {!isConnected ? (
-        <button type="button" className="merchant-claim" onClick={() => open()}>
-          Connect Wallet
-        </button>
-      ) : null}
-      {isConnected && loading ? <p className="merchant-status">Loading Imp Coins…</p> : null}
-      {error ? <p className="merchant-status">{error}</p> : null}
-      {isConnected && !loading && balance ? (
-        <section className="merchant-card">
-          <p>Imp Coin Balance</p>
-          <strong>{coins(balance.imp_coins)}</strong>
-          {portable > 0 && !claimed ? (
-            <button type="button" className="merchant-claim" disabled={claiming} onClick={claim}>
-              {claiming ? "Claiming…" : `Claim ${coins(portable)} Imp Coins`}
-            </button>
-          ) : null}
-          {claimed ? <span>These Imp Coins are on your account.</span> : null}
-          {!claimed && portable <= 0 ? <span>This wallet has no Imp Coins to claim.</span> : null}
-        </section>
-      ) : null}
+      <div className="merchant-column">
+        <img className="merchant-portrait" src="/merchant.png" alt="Merchant" />
+        {!isConnected ? (
+          <button type="button" className="merchant-claim" onClick={() => open()}>
+            Connect Wallet
+          </button>
+        ) : null}
+        {isConnected && loading ? <p className="merchant-status">Loading Imp Coins…</p> : null}
+        {error ? <p className="merchant-status">{error}</p> : null}
+        {isConnected && !loading && balance ? (
+          <section className="merchant-card">
+            <p>Imp Coin Balance</p>
+            <strong>{coins(balance.imp_coins)}</strong>
+            {portable > 0 && !claimed ? (
+              <button type="button" className="merchant-claim" disabled={claiming} onClick={claim}>
+                {claiming ? "Claiming…" : `Claim ${coins(portable)} Imp Coins`}
+              </button>
+            ) : null}
+            {claimed ? <span>These Imp Coins are on your account.</span> : null}
+            {!claimed && portable <= 0 ? <span>This wallet has no Imp Coins to claim.</span> : null}
+          </section>
+        ) : null}
+      </div>
     </main>
   );
 }
