@@ -4,6 +4,7 @@ import ConnectWallet from "./components/ConnectWallet.jsx";
 import ProfileButton from "./components/ProfileButton.jsx";
 import Community from "./pages/Community.jsx";
 import Merchant from "./pages/Merchant.jsx";
+import Team from "./pages/Team.jsx";
 
 const ImpViewer = lazy(() => import("./components/ImpViewer.jsx"));
 const Collection = lazy(() => import("./pages/Collection.jsx"));
@@ -203,7 +204,7 @@ function Shell() {
       </aside>
       <Routes>
         <Route path="/" element={<Hub />} />
-        <Route path="/team" element={<BlankPage />} />
+        <Route path="/team" element={<Team />} />
         <Route
           path="/imp-viewer"
           element={
