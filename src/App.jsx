@@ -4,6 +4,7 @@ import ConnectWallet from "./components/ConnectWallet.jsx";
 import ProfileButton from "./components/ProfileButton.jsx";
 import Community from "./pages/Community.jsx";
 import Merchant from "./pages/Merchant.jsx";
+import Faqs from "./pages/Faqs.jsx";
 import Team from "./pages/Team.jsx";
 
 const ImpViewer = lazy(() => import("./components/ImpViewer.jsx"));
@@ -225,7 +226,7 @@ function Shell() {
         <Route path="/imp-merchant" element={<Merchant />} />
         <Route path="/roadmap" element={<BlankPage />} />
         <Route path="/official-links" element={<OfficialLinks />} />
-        <Route path="/faqs" element={<BlankPage />} />
+        <Route path="/faqs" element={<Faqs />} />
         <Route path="/community" element={<Community />} />
         <Route path="/hall-of-fame" element={<BlankPage />} />
       </Routes>

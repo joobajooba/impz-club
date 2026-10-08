@@ -814,6 +814,70 @@ body,
   font-size: 14px;
 }
 
+.faq-page {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: auto;
+  padding: 96px 24px 32px;
+}
+
+.faq-page h1 {
+  margin: 0 0 28px;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  font-size: clamp(32px, 5vw, 44px);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(760px, 100%);
+}
+
+.faq-item {
+  padding: 18px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  border-radius: 12px;
+  background: #12141c;
+}
+
+.faq-item h2 {
+  margin: 0 0 10px;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.faq-item p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-family: system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.faq-item p + p {
+  margin-top: 12px;
+}
+
+.faq-item strong {
+  color: #fff;
+}
+
+.faq-item a {
+  color: #fff;
+}
+
 .merchant-page {
   position: relative;
   z-index: 1;
@@ -1551,7 +1615,8 @@ body,
     font-size: 12px;
   }
 
-  .team-page {
+  .team-page,
+  .faq-page {
     padding: 80px 16px 16px;
   }
 
