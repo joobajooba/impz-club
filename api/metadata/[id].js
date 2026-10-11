@@ -1,10 +1,9 @@
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import { hasMmlAccess } from "../../src/lib/mmlAccess.js";
 
 const IMAGE_CID = "QmQ67ks5EfM8cLvLJ8UecWBjm9nrxP5x2H8ZDAnPWp1xPF";
-const MML_URL = "https://www.impz.club/avatars/green.mml";
+const MML_URL = "https://www.impz.club/avatars/0.mml";
 const TRAIT_NAMES = ["Background", "Body", "Head", "Back", "Clothing", "Eyes", "Tier"];
 const traits = JSON.parse(
   readFileSync(join(dirname(fileURLToPath(import.meta.url)), "traits.json"), "utf8")
@@ -26,16 +25,10 @@ function metadataFor(id) {
   };
 }
 
-export default async function handler(req, res) {
+export default function handler(req, res) {
   if (req.method !== "GET" && req.method !== "HEAD") {
     res.statusCode = 405;
     res.end("Method not allowed");
-    return;
-  }
-
-  if (!(await hasMmlAccess(req.headers.cookie))) {
-    res.statusCode = 404;
-    res.end();
     return;
   }
 
@@ -44,6 +37,7 @@ export default async function handler(req, res) {
   if (!metadata) {
     res.statusCode = 404;
     res.setHeader("Content-Type", "application/json");
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.end(JSON.stringify({ error: "Unknown Imp" }));
     return;
   }
@@ -51,6 +45,7 @@ export default async function handler(req, res) {
   const body = JSON.stringify(metadata);
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
-  res.setHeader("Cache-Control", "private, no-store");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Cache-Control", "public, max-age=3600");
   res.end(req.method === "HEAD" ? undefined : body);
 }

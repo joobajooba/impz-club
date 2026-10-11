@@ -9,7 +9,6 @@ import Team from "./pages/Team.jsx";
 
 const ImpViewer = lazy(() => import("./components/ImpViewer.jsx"));
 const Collection = lazy(() => import("./pages/Collection.jsx"));
-const MmlPreview = lazy(() => import("./pages/MmlPreview.jsx"));
 
 function Icon({ children }) {
   return (
@@ -230,14 +229,6 @@ function Shell() {
         <Route path="/faqs" element={<Faqs />} />
         <Route path="/community" element={<Community />} />
         <Route path="/hall-of-fame" element={<BlankPage />} />
-        <Route
-          path="/mml"
-          element={
-            <Suspense fallback={<main className="page" />}>
-              <MmlPreview />
-            </Suspense>
-          }
-        />
       </Routes>
     </>
   );
