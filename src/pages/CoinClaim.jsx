@@ -3,20 +3,17 @@ import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { claimImpCoins, loadImpCoins } from "../lib/db.js";
 import { notifyProfileChange } from "../lib/imps.js";
 
-const CATEGORIES = ["Whitelist Access", "Imp Items", "Titles", "Emblems", "Other"];
-
 function coins(value) {
   return Number(value || 0).toLocaleString("en-US");
 }
 
-export default function Merchant() {
+export default function CoinClaim() {
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
   const [balance, setBalance] = useState(null);
   const [loading, setLoading] = useState(false);
   const [claiming, setClaiming] = useState(false);
   const [error, setError] = useState("");
-  const [category, setCategory] = useState(CATEGORIES[0]);
 
   useEffect(() => {
     if (!address) {
@@ -69,22 +66,22 @@ export default function Merchant() {
   const claimed = Boolean(balance?.imp_coin_claimed);
 
   return (
-    <main className="merchant-page">
-      <div className="merchant-column">
-        <img className="merchant-portrait" src="/merchant.png" alt="Merchant" />
+    <main className="coin-claim-page">
+      <div className="coin-claim-column">
+        <img className="coin-claim-portrait" src="/merchant.png" alt="Merchant" />
         {!isConnected ? (
-          <button type="button" className="merchant-claim" onClick={() => open()}>
+          <button type="button" className="coin-claim-button" onClick={() => open()}>
             Connect Wallet
           </button>
         ) : null}
-        {isConnected && loading ? <p className="merchant-status">Loading Imp Coins…</p> : null}
-        {error ? <p className="merchant-status">{error}</p> : null}
+        {isConnected && loading ? <p className="coin-claim-status">Loading Imp Coins…</p> : null}
+        {error ? <p className="coin-claim-status">{error}</p> : null}
         {isConnected && !loading && balance ? (
-          <section className="merchant-card">
+          <section className="coin-claim-card">
             <p>Imp Coin Balance</p>
             <strong>{coins(balance.imp_coins)}</strong>
             {portable > 0 && !claimed ? (
-              <button type="button" className="merchant-claim" disabled={claiming} onClick={claim}>
+              <button type="button" className="coin-claim-button" disabled={claiming} onClick={claim}>
                 {claiming ? "Claiming…" : `Claim ${coins(portable)} Imp Coins`}
               </button>
             ) : null}
@@ -92,33 +89,10 @@ export default function Merchant() {
             {!claimed && portable <= 0 ? <span>This wallet has no Imp Coins to claim.</span> : null}
           </section>
         ) : null}
-        <section className="merchant-welcome">
-          <p>Welcome to the Merchant. Here you can spend your Imp Coins for a variety of cool things!</p>
+        <section className="coin-claim-note">
+          <p>By connecting your wallet, claim the coins you earned through Chapter 1 Staking.</p>
         </section>
       </div>
-      <section className="merchant-shop" aria-label="Items for sale">
-        <div className="merchant-filters">
-          {CATEGORIES.map((name) => (
-            <button
-              key={name}
-              type="button"
-              className={category === name ? "active" : ""}
-              aria-pressed={category === name}
-              onClick={() => setCategory(name)}
-            >
-              {name}
-            </button>
-          ))}
-        </div>
-        <div className="merchant-items">
-          {Array.from({ length: 8 }, (_, index) => (
-            <article className="merchant-item" key={`${category}-${index}`}>
-              <div />
-              <span>Placeholder</span>
-            </article>
-          ))}
-        </div>
-      </section>
     </main>
   );
 }

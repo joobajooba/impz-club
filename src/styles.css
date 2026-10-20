@@ -878,35 +878,28 @@ body,
   color: #fff;
 }
 
-.merchant-page {
+.coin-claim-page {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: min(360px, calc(100dvh - 440px), 100%) minmax(0, 1fr);
-  align-items: stretch;
-  height: 100dvh;
-  max-height: 100dvh;
-  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100dvh;
   padding: 80px 16px 16px;
-  gap: 14px;
 }
 
-.merchant-column {
+.coin-claim-column {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 12px;
-  width: 100%;
-  min-height: 0;
-  height: 100%;
+  width: min(360px, 100%);
 }
 
-.merchant-portrait {
+.coin-claim-portrait {
   width: 100%;
   height: auto;
   aspect-ratio: 1;
-  flex: 0 1 auto;
-  min-height: 0;
   object-fit: cover;
   border: 2px solid rgba(255, 255, 255, 0.82);
   border-radius: 12px;
@@ -914,7 +907,7 @@ body,
   image-rendering: pixelated;
 }
 
-.merchant-card {
+.coin-claim-card {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -928,7 +921,7 @@ body,
   font-family: system-ui, sans-serif;
 }
 
-.merchant-card p {
+.coin-claim-card p {
   margin: 0;
   font-size: 13px;
   font-weight: 700;
@@ -936,23 +929,23 @@ body,
   text-transform: uppercase;
 }
 
-.merchant-card strong {
+.coin-claim-card strong {
   font-size: 40px;
   line-height: 1;
 }
 
-.merchant-card span,
-.merchant-status {
+.coin-claim-card span,
+.coin-claim-status {
   color: #fff;
   font-family: system-ui, sans-serif;
   font-size: 16px;
 }
 
-.merchant-status {
+.coin-claim-status {
   margin: 0;
 }
 
-.merchant-claim {
+.coin-claim-button {
   width: 100%;
   min-height: 48px;
   padding: 0 18px;
@@ -966,105 +959,25 @@ body,
   cursor: pointer;
 }
 
-.merchant-claim:disabled {
+.coin-claim-button:disabled {
   cursor: wait;
   opacity: 0.7;
 }
 
-.merchant-welcome,
-.merchant-card,
-.merchant-claim {
-  flex: none;
-}
-
-.merchant-welcome {
+.coin-claim-note {
   padding: 16px;
   border: 2px solid rgba(255, 255, 255, 0.82);
   border-radius: 12px;
   background: #12141c;
 }
 
-.merchant-welcome p {
+.coin-claim-note p {
   margin: 0;
   color: #fff;
   font-family: system-ui, sans-serif;
   font-size: 15px;
   font-weight: 600;
   line-height: 1.35;
-}
-
-.merchant-shop {
-  display: grid;
-  grid-template-columns: 190px minmax(0, 1fr);
-  min-width: 0;
-  min-height: 0;
-  height: 100%;
-  border: 2px solid rgba(255, 255, 255, 0.82);
-  border-radius: 12px;
-  background: #12141c;
-  overflow: hidden;
-}
-
-.merchant-filters {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 0;
-  padding: 12px;
-  border-right: 1px solid rgba(255, 255, 255, 0.14);
-  overflow: auto;
-}
-
-.merchant-filters button {
-  min-height: 42px;
-  padding: 0 10px;
-  border: 2px solid rgba(255, 255, 255, 0.82);
-  border-radius: 8px;
-  background: transparent;
-  color: #fff;
-  font-family: system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  text-align: left;
-  cursor: pointer;
-}
-
-.merchant-filters button.active {
-  background: #fff;
-  color: #090a0f;
-}
-
-.merchant-items {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
-  align-content: start;
-  min-height: 0;
-  padding: 12px;
-  overflow: auto;
-}
-
-.merchant-item {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.28);
-  border-radius: 10px;
-  background: #090a0f;
-}
-
-.merchant-item div {
-  aspect-ratio: 1;
-  border-radius: 8px;
-  background: #1a1d27;
-}
-
-.merchant-item span {
-  color: rgba(255, 255, 255, 0.72);
-  font-family: system-ui, sans-serif;
-  font-size: 13px;
-  font-weight: 700;
 }
 
 .club-page {
@@ -1588,31 +1501,8 @@ body,
     padding: 72px 12px 12px;
   }
 
-  .merchant-page {
-    grid-template-columns: minmax(0, 148px) minmax(0, 1fr);
+  .coin-claim-page {
     padding: 72px 12px 12px;
-    gap: 10px;
-  }
-
-  .merchant-column {
-    width: 100%;
-  }
-
-  .merchant-shop {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(0, 1fr);
-  }
-
-  .merchant-filters {
-    flex-direction: row;
-    border-right: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-  }
-
-  .merchant-filters button {
-    flex: 1 1 auto;
-    text-align: center;
-    font-size: 12px;
   }
 
   .team-page,
