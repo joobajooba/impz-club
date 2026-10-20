@@ -42,9 +42,9 @@ export default function Profile() {
     });
   }
 
-  function persist(fields) {
+  function persist(fields, options) {
     if (!address) return Promise.resolve();
-    return saveProfile(address, fields).catch((err) => {
+    return saveProfile(address, fields, options).catch((err) => {
       console.warn("Could not save profile", err);
     });
   }
@@ -115,7 +115,7 @@ export default function Profile() {
           rank: nextRank,
           imp_coins: nextCoins,
           account_age: joinStamp,
-        });
+        }, { sign: false });
       } catch (err) {
         console.warn("Could not sync profile", err);
         if (!cancelled) setLoadError("Could not load wallet profile. Try again.");
