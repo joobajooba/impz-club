@@ -4,12 +4,13 @@ const SUPABASE_URL =
   process.env.VITE_SUPABASE_URL ||
   process.env.SUPABASE_URL ||
   "https://phlixtsxxuicatmrmdou.supabase.co";
-const SUPABASE_ANON_KEY =
-  process.env.VITE_SUPABASE_ANON_KEY ||
-  process.env.SUPABASE_ANON_KEY ||
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBobGl4dHN4eHVpY2F0bXJtZG91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMzExNTQsImV4cCI6MjEwMzYwNzE1NH0.DMLjjNJir1sHlnlBFIh6FKyOZUkK6a_wL7-8Cf2YlC4";
+// Server-only secret, set in Vercel. Never give it a VITE_ prefix (Vite ships those to the browser)
+// and never write it in this file.
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 const PROFILE_COLS = "wallet,username,pfp_id,rank,total_impz,tier_1,tier_2,tier_3,imp_coins,imp_coin_claimed,account_age,bio,updated_at";
+// The only columns the site may save. Coins and the claim flag change only through a claim.
+const EDITABLE_COLS = ["username", "pfp_id", "bio", "total_impz", "rank", "tier_1", "tier_2", "tier_3", "account_age"];
 const WALLET = /^0x[0-9a-f]{40}$/;
 
 function json(res, status, body) {
@@ -29,15 +30,20 @@ function readBody(req) {
 }
 
 async function supabase(path, options = {}) {
+  if (!SUPABASE_SERVICE_ROLE_KEY) throw fail(500, "Server is missing SUPABASE_SERVICE_ROLE_KEY");
+  const headers = {
+    apikey: SUPABASE_SERVICE_ROLE_KEY,
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    Prefer: options.prefer || "return=representation",
+  };
+  // Legacy keys are JWTs and also go in Authorization. Newer sb_secret_ keys only go in apikey.
+  if (SUPABASE_SERVICE_ROLE_KEY.startsWith("eyJ")) {
+    headers.Authorization = `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`;
+  }
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     method: options.method || "GET",
-    headers: {
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Prefer: options.prefer || "return=representation",
-    },
+    headers,
     body: options.body,
   });
   const text = await res.text();
@@ -66,6 +72,12 @@ function fail(status, error) {
 
 async function claimImpCoins(wallet) {
   if (!WALLET.test(wallet)) throw fail(400, "Missing wallet");
+  // The secret key skips row-level security, which used to refuse wallets with nothing to claim.
+  const balances = await supabase(
+    `imp_coin_balances?select=portable_imp_coin&wallet_address=eq.${encodeURIComponent(wallet)}`
+  );
+  const balance = Array.isArray(balances) ? balances[0] : null;
+  if (!(Number(balance?.portable_imp_coin) > 0)) throw fail(404, "This wallet has no Imp Coins to claim.");
   try {
     await supabase("imp_coin_claims", {
       method: "POST",
@@ -160,14 +172,14 @@ export default async function handler(req, res) {
         json(res, 200, row);
         return;
       }
-      const payload = {
-        ...fields,
-        wallet: nextWallet,
-        updated_at: new Date().toISOString(),
-      };
-      delete payload.action;
-      delete payload.imp_coins;
-      delete payload.imp_coin_claimed;
+      if (!WALLET.test(nextWallet)) {
+        json(res, 400, { error: "Missing wallet" });
+        return;
+      }
+      const payload = { wallet: nextWallet, updated_at: new Date().toISOString() };
+      for (const col of EDITABLE_COLS) {
+        if (Object.prototype.hasOwnProperty.call(fields, col)) payload[col] = fields[col];
+      }
       if (Object.prototype.hasOwnProperty.call(fields, "bio")) {
         const problem = bioError(fields.bio);
         if (problem) {
