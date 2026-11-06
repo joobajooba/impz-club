@@ -1,0 +1,472 @@
+{
+ "body": [
+  {
+   "id": "body_blue",
+   "name": "Blue",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "body_cyan",
+   "name": "Cyan",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "body_diamond",
+   "name": "Diamond",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "body_gold",
+   "name": "Gold",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "body_green",
+   "name": "Green",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "body_khaki",
+   "name": "Khaki",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "body_pink",
+   "name": "Pink",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "body_purple",
+   "name": "Purple",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "body_red",
+   "name": "Red",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "body_silver",
+   "name": "Silver",
+   "model": true,
+   "icon": true
+  }
+ ],
+ "head": [
+  {
+   "id": "head_afro",
+   "name": "Afro",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_blonde",
+   "name": "Blonde",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_bob",
+   "name": "Bob",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_cap",
+   "name": "Cap",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_clown",
+   "name": "Clown",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_crown",
+   "name": "Crown",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_fez",
+   "name": "Fez",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_geezer",
+   "name": "Geezer",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_halo",
+   "name": "Halo",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_hawk",
+   "name": "Hawk",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_mayc_brim",
+   "name": "MAYC Brim",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_sea_captain",
+   "name": "Sea Captain",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_slick",
+   "name": "Slick",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_soldier",
+   "name": "Soldier",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_spiky",
+   "name": "Spiky",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_straw_hat",
+   "name": "Straw Hat",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "head_tiara",
+   "name": "Tiara",
+   "model": true,
+   "icon": true
+  }
+ ],
+ "eyes": [
+  {
+   "id": "eyes_3d_glasses",
+   "name": "3D Glasses",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "eyes_bug_eye",
+   "name": "Bug-Eye",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "eyes_eye_patch",
+   "name": "Eye Patch",
+   "model": true,
+   "overlay": "eyes_red_pupils",
+   "icon": true
+  },
+  {
+   "id": "eyes_ghostly",
+   "name": "Ghostly",
+   "model": false,
+   "overlay": "eyes_ghostly",
+   "icon": true
+  },
+  {
+   "id": "eyes_glasses",
+   "name": "Glasses",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "eyes_goggles",
+   "name": "Goggles",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "eyes_gold_pupils",
+   "name": "Gold Pupils",
+   "model": false,
+   "overlay": "eyes_gold_pupils",
+   "icon": true
+  },
+  {
+   "id": "eyes_hearts",
+   "name": "Hearts",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "eyes_lazer",
+   "name": "Lazer",
+   "model": true,
+   "overlay": "eyes_lazer_glow",
+   "icon": true
+  },
+  {
+   "id": "eyes_mask",
+   "name": "Mask",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "eyes_monacle",
+   "name": "Monacle",
+   "model": true,
+   "overlay": "eyes_red_pupils",
+   "icon": true
+  },
+  {
+   "id": "eyes_neon_beam",
+   "name": "Neon Beam",
+   "model": true,
+   "overlay": "eyes_neon_beam_glow",
+   "icon": true
+  },
+  {
+   "id": "eyes_purple_pupils",
+   "name": "Purple Pupils",
+   "model": false,
+   "overlay": "eyes_purple_pupils",
+   "icon": true
+  },
+  {
+   "id": "eyes_red_pupils",
+   "name": "Red Pupils",
+   "model": false,
+   "overlay": "eyes_red_pupils",
+   "icon": true
+  },
+  {
+   "id": "eyes_robo",
+   "name": "Robo",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "eyes_shades",
+   "name": "Shades",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "eyes_stars",
+   "name": "Stars",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "eyes_tracker_blue",
+   "name": "Tracker Blue",
+   "model": true,
+   "overlay": "eyes_red_pupils",
+   "icon": true
+  },
+  {
+   "id": "eyes_tracker_purple",
+   "name": "Tracker Purple",
+   "model": true,
+   "overlay": "eyes_red_pupils",
+   "icon": true
+  }
+ ],
+ "clothing": [
+  {
+   "id": "clothing_armour",
+   "name": "Armour",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_battle_armour",
+   "name": "Battle Armour",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_bikini",
+   "name": "Bikini",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_blue_skull_tee",
+   "name": "Blue Skull Tee",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_demon_hoodie",
+   "name": "Demon Hoodie",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_elegant",
+   "name": "Elegant",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_gi",
+   "name": "Gi",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_polka_dress",
+   "name": "Polka Dress",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_puffer",
+   "name": "Puffer",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_pyjamas",
+   "name": "Pyjamas",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_ragged_vest",
+   "name": "Ragged Vest",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_robinhood_hoodie",
+   "name": "Robinhood Hoodie",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_robinhood_tee",
+   "name": "Robinhood Tee",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_skelly_tee",
+   "name": "Skelly Tee",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_trench",
+   "name": "Trench",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_vest",
+   "name": "Vest",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_waterproof_coat",
+   "name": "Waterproof Coat",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_white_tee",
+   "name": "White Tee",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "clothing_worker_vest",
+   "name": "Worker Vest",
+   "model": true,
+   "icon": true
+  }
+ ],
+ "back": [
+  {
+   "id": "back_angel_wings",
+   "name": "Angel Wings",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "back_bone_wings",
+   "name": "Bone Wings",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "back_cape",
+   "name": "Cape",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "back_golden_wings",
+   "name": "Golden Wings",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "back_imp_wings",
+   "name": "Imp Wings",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "back_mechanical_wings",
+   "name": "Mechanical Wings",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "back_samurai",
+   "name": "Samurai",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "back_scythe",
+   "name": "Scythe",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "back_sword",
+   "name": "Sword",
+   "model": true,
+   "icon": true
+  },
+  {
+   "id": "back_trident",
+   "name": "Trident",
+   "model": true,
+   "icon": true
+  }
+ ]
+}

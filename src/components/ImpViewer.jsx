@@ -11,7 +11,7 @@ export default function ImpViewer() {
 
   return (
     <main className="viewer-page">
-      <h1>Imp Viewer</h1>
+      <h1>Otherside Models</h1>
       <div className="viewer-switch" role="tablist" aria-label="Choose an Imp">
         {AVATARS.map((avatar) => (
           <button
