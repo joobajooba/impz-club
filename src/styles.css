@@ -1598,26 +1598,23 @@ body,
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   align-content: start;
-  gap: 8px;
+  gap: 6px;
   overflow: auto;
   padding-right: 2px;
 }
 
 .custom-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 4px;
+  min-height: 40px;
+  padding: 8px 10px;
   border: 2px solid rgba(255, 255, 255, 0.18);
-  border-radius: 10px;
+  border-radius: 8px;
   background: #1a1d27;
   color: #fff;
-  font: 600 12px system-ui, sans-serif;
+  font: 600 14px system-ui, sans-serif;
   line-height: 1.2;
-  text-align: center;
+  text-align: left;
   cursor: pointer;
 }
 
@@ -1627,27 +1624,13 @@ body,
 
 .custom-option.active {
   border-color: #fff;
-  background: #2a2f3d;
+  background: #fff;
+  color: #090a0f;
 }
 
 .custom-option:disabled {
   opacity: 0.35;
   cursor: not-allowed;
-}
-
-.custom-icon {
-  display: block;
-  width: 64px;
-  height: 64px;
-  image-rendering: pixelated;
-  object-fit: contain;
-}
-
-.custom-icon-none {
-  position: relative;
-  border: 2px dashed rgba(255, 255, 255, 0.35);
-  border-radius: 8px;
-  box-sizing: border-box;
 }
 
 .custom-summary {
