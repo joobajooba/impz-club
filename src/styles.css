@@ -1572,12 +1572,17 @@ body,
 
 .custom-tabs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 6px;
 }
 
 .custom-tabs button,
 .custom-actions button,
+.custom-actions select,
+.custom-save button,
+.custom-gate button,
+.custom-gate a,
+.custom-saved button,
 .custom-spin {
   min-height: 38px;
   padding: 0 8px;
@@ -1664,6 +1669,166 @@ body,
 .custom-spin:hover {
   background: #fff;
   color: #090a0f;
+}
+
+.custom-tabs button {
+  padding: 0 4px;
+  font-size: 13px;
+}
+
+.custom-option small {
+  display: block;
+  margin-top: 2px;
+  opacity: 0.55;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.custom-actions-3 {
+  grid-template-columns: 1.2fr 1fr 1fr;
+}
+
+.custom-start select {
+  width: 100%;
+  appearance: none;
+  text-align: center;
+}
+
+.custom-start select:disabled,
+.custom-save button:disabled,
+.custom-saved button:disabled,
+.custom-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.custom-save {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.custom-save input {
+  min-width: 0;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  background: #1a1d27;
+  color: #fff;
+  font: 600 14px system-ui, sans-serif;
+}
+
+.custom-save input:focus {
+  outline: none;
+  border-color: #fff;
+}
+
+.custom-save button {
+  background: #e85a4f;
+  border-color: #e85a4f;
+}
+
+.custom-save button:not(:disabled):hover,
+.custom-gate button:hover,
+.custom-gate a:hover,
+.custom-saved button:not(:disabled):hover {
+  background: #fff;
+  border-color: #fff;
+  color: #090a0f;
+}
+
+.custom-fine,
+.custom-notice,
+.custom-empty {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+}
+
+.custom-notice {
+  color: #8fe3a1;
+  font-size: 13px;
+}
+
+.custom-notice.bad {
+  color: #ff9b91;
+}
+
+.custom-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.45;
+}
+
+.custom-gate p {
+  margin: 0;
+}
+
+.custom-gate a {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.custom-options-list {
+  display: block;
+}
+
+.custom-saved {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.custom-saved li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: #1a1d27;
+}
+
+.custom-saved strong,
+.custom-saved span,
+.custom-saved em {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.custom-saved span {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+.custom-saved em {
+  margin-top: 2px;
+  color: #ffb36b;
+  font-size: 11px;
+}
+
+.custom-saved button {
+  min-height: 32px;
+  font-size: 12px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .custom-view {
