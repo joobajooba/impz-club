@@ -43,8 +43,6 @@ function loadImage(url) {
   return imageCache.get(url);
 }
 
-export const iconUrl = (id) => `${BASE}/icons/${id}.png`;
-
 function pixelTexture(source) {
   const tex = new THREE.Texture(source);
   tex.magFilter = THREE.NearestFilter;

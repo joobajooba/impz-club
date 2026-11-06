@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { buildImp, disposeImp, iconUrl, loadManifest } from "../lib/impRig.js";
+import { buildImp, disposeImp, loadManifest } from "../lib/impRig.js";
 
 const TYPES = [
   { key: "body", label: "Body", none: false },
@@ -217,8 +217,7 @@ export default function ImpCustomization() {
               aria-pressed={selection[tab] === null}
               onClick={() => pick(tab, null)}
             >
-              <span className="custom-icon custom-icon-none" aria-hidden="true" />
-              <span>None</span>
+              None
             </button>
           ) : null}
           {options.map((opt) => {
@@ -234,12 +233,7 @@ export default function ImpCustomization() {
                 title={owned ? opt.name : `${opt.name} (not owned)`}
                 onClick={() => pick(tab, opt.id)}
               >
-                {opt.icon ? (
-                  <img className="custom-icon" src={iconUrl(opt.id)} alt="" loading="lazy" />
-                ) : (
-                  <span className="custom-icon" aria-hidden="true" />
-                )}
-                <span>{opt.name}</span>
+                {opt.name}
               </button>
             );
           })}

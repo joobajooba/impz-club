@@ -2,12 +2,14 @@
 
 Run from this repo's root:  python scripts/export_impz_models.py [path to club-impz]
 Writes public/impz/manifest.json, public/impz/models/<id>.json (geometry only), public/impz/textures/<id>.png
-and public/impz/icons/<id>.png (the trait's 2D layer art, for the menu)."""
+and, with --icons, public/impz/icons/<id>.png (the trait's 2D layer art; the menu shows text for now)."""
 import json, os, re, shutil, sys
 from PIL import Image
 from pathlib import Path
 
-GAME = Path(sys.argv[1] if len(sys.argv) > 1 else 'C:/Users/lucas/club-impz')
+ICONS = '--icons' in sys.argv
+ARGS = [a for a in sys.argv[1:] if a != '--icons']
+GAME = Path(ARGS[0] if ARGS else 'C:/Users/lucas/club-impz')
 ASSETS = GAME / 'godot-game/assets'
 LAYERS = GAME / 'docs/imp-traits/layers'
 OUT = Path(__file__).resolve().parent.parent / 'public/impz'
@@ -37,7 +39,7 @@ for line in (GAME / 'docs/implingz_collection.md').read_text(encoding='utf8').sp
 
 if OUT.exists():
     shutil.rmtree(OUT)
-for d in ('models', 'textures', 'icons'):
+for d in ('models', 'textures') + (('icons',) if ICONS else ()):
     (OUT / d).mkdir(parents=True)
 
 
@@ -74,7 +76,7 @@ for ty in TYPES:
         for f in (ASSETS / 'textures/impz/eyes').glob('eyes_*.png'):
             if f.stem.endswith('_glow') or f.stem[5:] in EYE_OVERLAYS:
                 shutil.copyfile(f, OUT / 'textures' / f.name)
-    for e in manifest[ty]:
+    for e in (manifest[ty] if ICONS else []):
         layer = LAYERS / f"{ty}_{e['id'].split('_', 1)[1]}.png"
         if ty == 'body':
             layer = next((GAME / 'docs/imp-traits/bodies').glob(f"body_{e['id'][5:]}_*.png"), None)
@@ -89,7 +91,7 @@ for ty in TYPES:
             icon.save(OUT / 'icons' / f"{e['id']}.png", optimize=True)
             e['icon'] = True
     manifest[ty].sort(key=lambda e: e['name'].lower())
-    missing = [e['id'] for e in manifest[ty] if not e.get('icon')]
+    missing = [e['id'] for e in manifest[ty] if ICONS and not e.get('icon')]
     print(f"{ty}: {len(manifest[ty])} options{'  (no icon: ' + ', '.join(missing) + ')' if missing else ''}")
     unnamed = [e['id'] for e in manifest[ty] if (ty, e['id'].split('_', 1)[1]) not in names]
     assert not unnamed, f'no doc name for {unnamed}'
