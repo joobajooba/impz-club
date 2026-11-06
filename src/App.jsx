@@ -8,6 +8,7 @@ import Faqs from "./pages/Faqs.jsx";
 import Team from "./pages/Team.jsx";
 
 const ImpViewer = lazy(() => import("./components/ImpViewer.jsx"));
+const ImpCustomization = lazy(() => import("./pages/ImpCustomization.jsx"));
 const Collection = lazy(() => import("./pages/Collection.jsx"));
 
 function Icon({ children }) {
@@ -30,7 +31,8 @@ const NAV = [
       </Icon>
     ),
     items: [
-      { to: "/imp-viewer", label: "Imp Viewer" },
+      { to: "/otherside-models", label: "Otherside Models" },
+      { to: "/imp-customization", label: "Imp Customization" },
       { to: "/collection", label: "Collection" },
       { to: "/coin-claim", label: "Imp Coins Claim" },
     ],
@@ -207,10 +209,19 @@ function Shell() {
         <Route path="/" element={<Hub />} />
         <Route path="/team" element={<Team />} />
         <Route
-          path="/imp-viewer"
+          path="/otherside-models"
           element={
-            <Suspense fallback={<main className="viewer-page"><h1>Imp Viewer</h1></main>}>
+            <Suspense fallback={<main className="viewer-page"><h1>Otherside Models</h1></main>}>
               <ImpViewer />
+            </Suspense>
+          }
+        />
+        <Route path="/imp-viewer" element={<Navigate to="/otherside-models" replace />} />
+        <Route
+          path="/imp-customization"
+          element={
+            <Suspense fallback={<main className="custom-page"><h1>Imp Customization</h1></main>}>
+              <ImpCustomization />
             </Suspense>
           }
         />
