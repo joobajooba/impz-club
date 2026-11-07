@@ -16,6 +16,12 @@ const EDITABLE_COLS = ["username", "pfp_id", "bio", "total_impz", "rank", "tier_
 const WALLET = /^0x[0-9a-f]{40}$/;
 // Changing these needs a signed-in session for the wallet. The rest are stats the site syncs on load.
 const OWNER_COLS = ["username", "pfp_id", "bio"];
+// Usernames are unique (supabase/profile_accounts.sql), ignoring capitals and spaces at the ends.
+// New names must be 3-24 letters, numbers, spaces, dots, dashes or underscores. Names saved before this
+// rule keep working until they are changed.
+const USERNAME = /^[A-Za-z0-9 ._-]{3,24}$/;
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const TAKEN = "That username is taken. Please pick another.";
 const CHALLENGE_TTL_MS = 10 * 60 * 1000;
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -66,6 +72,29 @@ function sessionWallet(req) {
   } catch {
     return "";
   }
+}
+
+function usernameError(name) {
+  if (!USERNAME.test(name)) return "Usernames are 3 to 24 letters, numbers, spaces, dots, dashes or underscores.";
+  return "";
+}
+
+// An exact, case-blind match with PostgREST's ilike. Only valid usernames get here, so "_" is the one
+// wildcard they can hold (no % or *): it is escaped with a backslash.
+function likeExact(text) {
+  return encodeURIComponent(String(text).replace(/_/g, "\\_"));
+}
+
+async function usernameTaken(name, wallet) {
+  const rows = await supabase(
+    `profiles?select=wallet&username=ilike.${likeExact(name)}&wallet=neq.${encodeURIComponent(wallet)}&limit=1`
+  );
+  return Array.isArray(rows) && rows.length > 0;
+}
+
+async function loadEmail(wallet) {
+  const rows = await supabase(`profile_private?select=email&wallet=eq.${encodeURIComponent(wallet)}`);
+  return (Array.isArray(rows) ? rows[0]?.email : null) || "";
 }
 
 function json(res, status, body) {
@@ -177,6 +206,28 @@ export default async function handler(req, res) {
       return;
     }
 
+    if (req.method === "GET" && url.searchParams.has("username_free")) {
+      const name = String(url.searchParams.get("username_free") || "").trim();
+      const problem = usernameError(name);
+      json(res, 200, { free: !problem && !(await usernameTaken(name, wallet)), error: problem || undefined });
+      return;
+    }
+
+    // The signed-in wallet's own account, with its private email (the game's Profile menu).
+    if (req.method === "GET" && url.searchParams.get("me") === "1") {
+      if (!WALLET.test(wallet) || sessionWallet(req) !== wallet) {
+        json(res, 401, { error: "Sign in with your wallet to see your account.", needsSignature: true });
+        return;
+      }
+      const [rows, email] = await Promise.all([
+        supabase(`profiles?select=${PROFILE_COLS}&wallet=eq.${encodeURIComponent(wallet)}`),
+        loadEmail(wallet),
+      ]);
+      const row = Array.isArray(rows) ? rows[0] || null : null;
+      json(res, 200, { wallet, profile: row, email });
+      return;
+    }
+
     if (req.method === "GET" && url.searchParams.get("board") === "1") {
       const rows = await supabase(`profiles?select=wallet,total_impz&limit=2000`);
       json(res, 200, rows || []);
@@ -245,21 +296,58 @@ export default async function handler(req, res) {
         json(res, 400, { error: "Missing wallet" });
         return;
       }
-      const owned = OWNER_COLS.filter((col) => Object.prototype.hasOwnProperty.call(fields, col));
-      if (owned.length && sessionWallet(req) !== nextWallet) {
-        // Re-sending the stored value (the page's sync on load) needs no signature. Changing it does.
-        const rows = await supabase(`profiles?select=${OWNER_COLS.join(",")}&wallet=eq.${encodeURIComponent(nextWallet)}`);
-        const current = (Array.isArray(rows) ? rows[0] : null) || {};
-        const norm = (value) => String(value ?? "").trim();
-        if (owned.some((col) => norm(fields[col]) !== norm(current[col]))) {
-          json(res, 401, { error: "Sign in with your wallet to change your profile.", needsSignature: true });
+      const has = (col) => Object.prototype.hasOwnProperty.call(fields, col);
+      const signedIn = sessionWallet(req) === nextWallet;
+      // The email is private: only the wallet's own signed-in session can set it.
+      if (has("email")) {
+        if (!signedIn) {
+          json(res, 401, { error: "Sign in with your wallet to change your email.", needsSignature: true });
+          return;
+        }
+        const email = String(fields.email || "").trim().toLowerCase();
+        if (email && (email.length > 254 || !EMAIL.test(email))) {
+          json(res, 400, { error: "That email address doesn't look right." });
           return;
         }
       }
+      const norm = (value) => String(value ?? "").trim();
+      const owned = OWNER_COLS.filter(has);
+      if (owned.length) {
+        // Re-sending the stored value (the page's sync on load) needs no signature. Changing it does.
+        const rows = await supabase(`profiles?select=${OWNER_COLS.join(",")}&wallet=eq.${encodeURIComponent(nextWallet)}`);
+        const current = (Array.isArray(rows) ? rows[0] : null) || {};
+        if (!signedIn && owned.some((col) => norm(fields[col]) !== norm(current[col]))) {
+          json(res, 401, { error: "Sign in with your wallet to change your profile.", needsSignature: true });
+          return;
+        }
+        if (has("username") && norm(fields.username) !== norm(current.username)) {
+          const name = norm(fields.username);
+          if (name) {
+            const problem = usernameError(name);
+            if (problem) {
+              json(res, 400, { error: problem });
+              return;
+            }
+            if (await usernameTaken(name, nextWallet)) {
+              json(res, 409, { error: TAKEN });
+              return;
+            }
+          }
+        }
+      }
+      if (has("email")) {
+        const email = String(fields.email || "").trim().toLowerCase();
+        await supabase("profile_private", {
+          method: "POST",
+          prefer: "resolution=merge-duplicates,return=minimal",
+          body: JSON.stringify({ wallet: nextWallet, email: email || null, updated_at: new Date().toISOString() }),
+        });
+      }
       const payload = { wallet: nextWallet, updated_at: new Date().toISOString() };
       for (const col of EDITABLE_COLS) {
-        if (Object.prototype.hasOwnProperty.call(fields, col)) payload[col] = fields[col];
+        if (has(col)) payload[col] = fields[col];
       }
+      if (has("username")) payload.username = norm(fields.username).slice(0, 24);
       if (Object.prototype.hasOwnProperty.call(fields, "bio")) {
         const problem = bioError(fields.bio);
         if (problem) {
@@ -279,6 +367,11 @@ export default async function handler(req, res) {
 
     json(res, 405, { error: "Method not allowed" });
   } catch (error) {
+    // Two players saving the same new name at once: the unique index stops the second.
+    if (/profiles_username_unique/.test(String(error.message || ""))) {
+      json(res, 409, { error: TAKEN });
+      return;
+    }
     json(res, error.status || 500, { error: error.message || "Profile request failed" });
   }
 }
